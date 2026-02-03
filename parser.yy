@@ -5,10 +5,6 @@
 %define api.value.type variant
 %define api.token.constructor
 
-/*ADDED AFTER*/
-%define api.namespace {yy}
-
-
 /* Required code included before the parser definition begins */
 %code requires{
   #include <string>
@@ -27,7 +23,13 @@
 
 /* Token definitions for the grammar */
 /* Tokens represent the smallest units of the language, like operators and parentheses */
-%token <std::string> PLUSOP MINUSOP MULTOP INT LP RP 
+
+/*
+  EDITOR NOTE
+  EDIT -> ADDED STRING, CHAR 
+*/
+%token <std::string> PLUSOP MINUSOP MULTOP INT LP RP STRING CHAR 
+
 %token END 0 "end of file"
 
 /* Operator precedence and associativity rules */
@@ -44,11 +46,12 @@
 %%
 root:       expression {root = $1;};
 
-expression: expression PLUSOP expression {      /*
-                                                  Create a subtree that corresponds to the AddExpression
-                                                  The root of the subtree is AddExpression
-                                                  The childdren of the AddExpression subtree are the left hand side (expression accessed through $1) and right hand side of the expression (expression accessed through $3)
-                                                */
+expression: expression PLUSOP expression {      
+  /*
+  Create a subtree that corresponds to the AddExpression
+  The root of the subtree is AddExpression
+  The childdren of the AddExpression subtree are the left hand side (expression accessed through $1) and right hand side of the expression (expression accessed through $3)
+*/
                             $$ = new Node("AddExpression", "", yylineno);
                             $$->children.push_back($1);
                             $$->children.push_back($3);

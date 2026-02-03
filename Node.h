@@ -11,6 +11,12 @@
 using namespace std;
 
 
+
+/*
+	BUILD TREE?
+
+
+*/
 class Node {
 public:
 	int id, lineno;

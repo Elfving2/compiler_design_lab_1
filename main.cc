@@ -4,8 +4,7 @@
 extern Node *root;
 extern FILE *yyin;
 extern int yylineno;
-//extern int lexical_errors;
-int lexical_errors = 0;
+extern int lexical_errors;
 extern yy::parser::symbol_type yylex();
 
 enum errCodes
