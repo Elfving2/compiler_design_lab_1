@@ -28,7 +28,7 @@
   EDITOR NOTE
   EDIT -> ADDED STRING, CHAR 
 */
-%token <std::string> PLUSOP MINUSOP MULTOP INT LP RP STRING CHAR 
+%token <std::string> PLUSOP MINUSOP MULTOP INT LP RP STRING CHAR AMPERSAND
 
 %token END 0 "end of file"
 
