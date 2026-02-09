@@ -10,16 +10,16 @@
 
     /* KEYWORDS */
 "class"             {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
-"main"              {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
-"int"               {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
-"float"             {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
+"main"              {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {return yy::parser::make_MAIN(yytext);}}
+"int"               {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {return yy::parser::make_INT_TYPE(yytext);}}
+"float"             {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {return yy::parser::make_FLOAT_TYPE(yytext);}}
 "boolean"           {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
 "void"              {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
-"volatile"          {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
+"volatile"          {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {return yy::parser::make_VOLATILE(yytext);}}
 "if"                {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
 "else"              {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
 "for"               {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
-"print"             {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
+"print"             {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {return yy::parser::make_PRINT(yytext);}}
 "read"              {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
 "return"            {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
 "break"             {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
@@ -31,8 +31,8 @@
 "+"                 {if(USE_LEX_ONLY) {printf("PLUSOP\n");} else {return yy::parser::make_PLUSOP(yytext);}}
 "-"                 {if(USE_LEX_ONLY) {printf("SUBOP\n");} else {return yy::parser::make_MINUSOP(yytext);}}
 "*"                 {if(USE_LEX_ONLY) {printf("MULTOP\n");} else {return yy::parser::make_MULTOP(yytext);}}
-"/"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
-"^"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}   
+"/"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {return yy::parser::make_DIVOP(yytext);}}
+"^"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {return yy::parser::make_POWER(yytext);}}   
 "&"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
 "|"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
 "="                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
@@ -41,7 +41,7 @@
 ">"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
 "<="                {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
 ">="                {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
-":="                {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
+":="                {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {return yy::parser::make_ASSIGN(yytext);}}
 "!"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
 
     /* SYMBOLS */
@@ -49,30 +49,26 @@
 ")"                 {if(USE_LEX_ONLY) {printf("RP\n");} else {return yy::parser::make_RP(yytext);}}
 "["                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {}}
 "]"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {}}
-"{"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {}}
-"}"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {}}
+"{"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {return yy::parser::make_LCB(yytext);}}
+"}"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {return yy::parser::make_RCB(yytext);}}
 "."                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {}}
 ","                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {}}
-":"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {}}
+":"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {return yy::parser::make_COLON(yytext);}}
 
 
 
 
     /* NEWLINE */
 [\t\n\r]+              {}
+"\n"                   {if(USE_LEX_ONLY) {printf("RP\n");} else {return yy::parser::make_NEWLINE(yytext);}}
 
     /* NUMBERS */
 0|[1-9][0-9]*          {if(USE_LEX_ONLY) {printf("INT\n");} else {return yy::parser::make_INT(yytext);}}
+([0-9]*[.])?[0-9]+     {if(USE_LEX_ONLY) {printf("FLOAT\n");} else {return yy::parser::make_FLOAT(yytext);}}
 
 
     /* ID */
-[a-zA-Z_][a-zA-Z0-9_]* {if(USE_LEX_ONLY) {printf("ID\n");} else {}}
-
-    /* IDENTIFIER DONT WORK WHEN I HAVE ID */
-    /*
-        [a-zA-Z]               {if(USE_LEX_ONLY) {printf("CHAR\n");} else {}}  
-        [a-zA-Z]+              {if(USE_LEX_ONLY) {printf("STRING\n");} else {}}
-    */
+[a-zA-Z_][a-zA-Z0-9_]* {if(USE_LEX_ONLY) {printf("FLOAT\n");} else {return yy::parser::make_ID(yytext);}}
 
 
     /* skip whitespace & comments*/
