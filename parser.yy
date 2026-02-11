@@ -25,7 +25,7 @@
 /* Tokens represent the smallest units of the language, like operators and parentheses */
 
 
-%token <std::string> PLUSOP MINUSOP MULTOP INT LP RP FLOAT DIVOP NEWLINE POWER FLOAT_TYPE INT_TYPE VOLATILE ID COLON ASSIGN RETURN PRINT LCB RCB MAIN FOR COMMA AND OR EQTO NEQ LE GE LT GT IF
+%token <std::string> PLUSOP MINUSOP MULTOP INT LP RP FLOAT DIVOP POWER FLOAT_TYPE INT_TYPE VOLATILE ID COLON ASSIGN RETURN PRINT LCB RCB MAIN FOR COMMA AND OR EQTO NEQ LE GE LT GT IF SLB SRB COMMENT 
 
 %token END 0 "end of file"
 
@@ -37,7 +37,7 @@
 
 /* Specify types for non-terminals in the grammar */
 /* The type specifies the data type of the values associated with these non-terminals */
-%type <Node *> root expression rules arithmetic_operators math_expression variable type return print block main for_statement relational_operators if_statement
+%type <Node *> root expression rules arithmetic_operators math_expression variable type return print block main for_statement relational_operators if_statement number_array array comment
 
 
 /* Grammar rules section */ 
@@ -90,6 +90,14 @@ rules:
   }
   |
   if_statement {
+    $$ = $1;
+  }
+  |
+  array {
+    $$ = $1;
+  }
+  |
+  comment {
     $$ = $1;
   }
   ;
@@ -181,12 +189,31 @@ variable:
     $$->children.push_back(new Node("Assign", "", yylineno));
     $$->children.push_back($3);
   }
+  |
+  ID ASSIGN array {
+
+  }
+  |
+  array ASSIGN array {
+
+  }
+  |
+  array  ASSIGN ID {
+
+  }
+  ;
+
+
 print:
   PRINT LP ID RP {
         $$ = new Node("Print", "", yylineno);
         $$->children.push_back(new Node("Lp", "", yylineno));
         $$->children.push_back(new Node("Id", "", yylineno));
         $$->children.push_back(new Node("Rp", "", yylineno)); 
+  }
+  |
+  PRINT LP array RP {
+
   }
   ;
 
@@ -212,10 +239,11 @@ main:
   ;
 
 for_statement:
-  FOR LP ID ASSIGN INT COMMA ID relational_operators ID COMMA ID ASSIGN math_expression RP block {
+  FOR LP ID ASSIGN INT COMMA ID relational_operators math_expression COMMA ID ASSIGN math_expression RP block {
     $$ = new Node("for_loop", "", yylineno);
   }
-;
+  ;
+
 relational_operators:
   EQTO {
     $$ = new Node("Equal_To", "", yylineno);
@@ -245,9 +273,36 @@ relational_operators:
 
   if_statement:
   IF LP math_expression relational_operators math_expression RP block {
+    
+  }
+  |
+  IF LP array relational_operators array RP block {
+    
+  }
+  ;
+
+
+
+
+number_array:
+  arithmetic_operators
+  |
+  number_array COMMA arithmetic_operators
+
+
+array:
+  VOLATILE ID COLON type SLB SRB ASSIGN type SLB number_array SRB {
+
+  }
+  |
+  ID SLB math_expression SRB {
 
   }
 
+comment:
+  COMMENT {
+
+  }
 
 /* ./compiler < test_files/valid/test1.cpm */
 

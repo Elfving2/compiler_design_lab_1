@@ -46,32 +46,24 @@
     /* SYMBOLS */
 "("                 {if(USE_LEX_ONLY) {printf("LP\n");} else {return yy::parser::make_LP(yytext);}}
 ")"                 {if(USE_LEX_ONLY) {printf("RP\n");} else {return yy::parser::make_RP(yytext);}}
-"["                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {}}
-"]"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {}}
+"["                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {return yy::parser::make_SLB(yytext);}}
+"]"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {return yy::parser::make_SRB(yytext);}}
 "{"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {return yy::parser::make_LCB(yytext);}}
 "}"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {return yy::parser::make_RCB(yytext);}}
 "."                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {}}
 ","                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {return yy::parser::make_COMMA(yytext);}}
 ":"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {return yy::parser::make_COLON(yytext);}}
-
-
-
-
     /* NEWLINE */
 [\t\n\r]+              {}
-"\n"                   {if(USE_LEX_ONLY) {printf("RP\n");} else {return yy::parser::make_NEWLINE(yytext);}}
-
-    /* NUMBERS */
 0|[1-9][0-9]*          {if(USE_LEX_ONLY) {printf("INT\n");} else {return yy::parser::make_INT(yytext);}}
 ([0-9]*[.])?[0-9]+     {if(USE_LEX_ONLY) {printf("FLOAT\n");} else {return yy::parser::make_FLOAT(yytext);}}
-
-
     /* ID */
+\/\/[^\n]* {if(USE_LEX_ONLY) {printf("FLOAT\n");} else {return yy::parser::make_COMMENT(yytext);}}
+
 [a-zA-Z_][a-zA-Z0-9_]* {if(USE_LEX_ONLY) {printf("FLOAT\n");} else {return yy::parser::make_ID(yytext);}}
 
-
     /* skip whitespace & comments*/
-[\t\r ]                       {if(USE_LEX_ONLY) {printf("SPACE\n");} else {}}
+[\t\r ]                 {if(USE_LEX_ONLY) {printf("SPACE\n");} else {}}
 
     /*EOF & errors*/
 .                       { if(!lexical_errors) fprintf(stderr, "Lexical errors found! See the logs below: \n"); fprintf(stderr,"\t@error at line %d. Character %s is not recognized\n", yylineno, yytext); lexical_errors = 1;}
