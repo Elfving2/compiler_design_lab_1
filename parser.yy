@@ -25,18 +25,19 @@
 /* Tokens represent the smallest units of the language, like operators and parentheses */
 
 
-%token <std::string> PLUSOP MINUSOP MULTOP INT LP RP FLOAT DIVOP NEWLINE POWER FLOAT_TYPE INT_TYPE VOLATILE ID COLON ASSIGN RETURN PRINT LCB RCB MAIN
+%token <std::string> PLUSOP MINUSOP MULTOP INT LP RP FLOAT DIVOP NEWLINE POWER FLOAT_TYPE INT_TYPE VOLATILE ID COLON ASSIGN RETURN PRINT LCB RCB MAIN FOR COMMA AND OR EQTO NEQ LE GE LT GT IF
 
 %token END 0 "end of file"
 
 /* Operator precedence and associativity rules */
 /* Used to resolve ambiguities in parsing expressions See https://www.gnu.org/software/bison/manual/bison.html#Precedence-Decl */ 
 %left PLUSOP MINUSOP
-%left MULTOP DIVOP POWER
+%left MULTOP DIVOP
+%right POWER
 
 /* Specify types for non-terminals in the grammar */
 /* The type specifies the data type of the values associated with these non-terminals */
-%type <Node *> root expression rules factor math_expression create_variable type return print block main
+%type <Node *> root expression rules arithmetic_operators math_expression variable type return print block main for_statement relational_operators if_statement
 
 
 /* Grammar rules section */ 
@@ -64,7 +65,7 @@ rules:
     $$ = $1;
   }
   |
-  create_variable {
+  variable {
     $$ = $1;
   }
   |
@@ -83,6 +84,14 @@ rules:
   main {
     $$ = $1;
   }
+  |
+  for_statement {
+    $$ = $1;
+  }
+  |
+  if_statement {
+    $$ = $1;
+  }
   ;
 
 math_expression:
@@ -91,34 +100,37 @@ math_expression:
         $$->children.push_back($1);
         $$->children.push_back($3);
     }
-  | math_expression MINUSOP math_expression {
+    | 
+    math_expression MINUSOP math_expression {
         $$ = new Node("Sub", "", yylineno);
         $$->children.push_back($1);
         $$->children.push_back($3);
     }
-  | math_expression MULTOP math_expression {
+    | 
+    math_expression MULTOP math_expression {
         $$ = new Node("Mul", "", yylineno);
         $$->children.push_back($1);
         $$->children.push_back($3);
     }
-  | math_expression POWER math_expression {
-        $$ = new Node("Power", "", yylineno);
-        $$->children.push_back($1);
-        $$->children.push_back($3);
-  }
-  |
-  math_expression DIVOP math_expression {
+    | 
+    math_expression DIVOP math_expression {
         $$ = new Node("Div", "", yylineno);
         $$->children.push_back($1);
         $$->children.push_back($3);
-  }
-  | 
-  factor {
+    }
+    | 
+    math_expression POWER math_expression {
+        $$ = new Node("Pow", "", yylineno);
+        $$->children.push_back($1);
+        $$->children.push_back($3);
+    }
+    |
+    arithmetic_operators {
         $$ = $1;
   }
   ;
 
-factor: 
+arithmetic_operators: 
   INT {
     $$ = new Node("Int", "", yylineno);
   }
@@ -129,7 +141,12 @@ factor:
   |
   LP math_expression RP {
     $$ = $2;
-  };
+  }
+  |
+  ID {
+    $$ = new Node("Id", "", yylineno);
+  }
+  ;
 
 type: 
   INT_TYPE {
@@ -141,7 +158,7 @@ type:
   }
   ;
 
-create_variable:
+variable:
   VOLATILE ID COLON type ASSIGN math_expression {
         $$ = new Node("Variable", "", yylineno);
         $$->children.push_back(new Node("Volatile", "", yylineno));
@@ -149,8 +166,21 @@ create_variable:
         $$->children.push_back($4);
         $$->children.push_back($6);
   }
-  ;
-
+  |
+  VOLATILE ID COLON type {
+        $$ = new Node("Variable", "", yylineno);
+        $$->children.push_back(new Node("Volatile", "", yylineno));
+        $$->children.push_back(new Node("Id", "", yylineno)); /*Change text?*/
+        $$->children.push_back(new Node("Colon", "", yylineno));
+        $$->children.push_back(new Node("Type", "", yylineno));
+  }
+  |
+  ID ASSIGN math_expression {
+    $$ = new Node("reassign", "", yylineno);
+    $$->children.push_back(new Node("Id", "", yylineno));
+    $$->children.push_back(new Node("Assign", "", yylineno));
+    $$->children.push_back($3);
+  }
 print:
   PRINT LP ID RP {
         $$ = new Node("Print", "", yylineno);
@@ -178,6 +208,44 @@ main:
   MAIN LP RP COLON type block {
     $$ = new Node("main", "", yylineno);
     $$->children.push_back($6);
+  }
+  ;
+
+for_statement:
+  FOR LP ID ASSIGN INT COMMA ID relational_operators ID COMMA ID ASSIGN math_expression RP block {
+    $$ = new Node("for_loop", "", yylineno);
+  }
+;
+relational_operators:
+  EQTO {
+    $$ = new Node("Equal_To", "", yylineno);
+  }
+  |
+  NEQ {
+    $$ = new Node("Not_equal_to", "", yylineno);
+  }
+  |
+  LE {
+    $$ = new Node("Less_than_or_equal to", "", yylineno);
+  }
+  |
+  GE {
+    $$ = new Node("Greater_than_or_equal_To", "", yylineno);
+  }
+  |
+  LT {
+    $$ = new Node("Less_than", "", yylineno);
+  }
+  |
+  GT {
+    $$ = new Node("Greater_than", "", yylineno);
+  }
+  ;
+
+
+  if_statement:
+  IF LP math_expression relational_operators math_expression RP block {
+
   }
 
 

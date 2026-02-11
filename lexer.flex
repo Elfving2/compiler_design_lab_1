@@ -16,9 +16,9 @@
 "boolean"           {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
 "void"              {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
 "volatile"          {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {return yy::parser::make_VOLATILE(yytext);}}
-"if"                {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
+"if"                {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {return yy::parser::make_IF(yytext);}}
 "else"              {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
-"for"               {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
+"for"               {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {return yy::parser::make_FOR(yytext);}}
 "print"             {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {return yy::parser::make_PRINT(yytext);}}
 "read"              {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
 "return"            {if(USE_LEX_ONLY) {printf("KEYWORD\n");} else {}}
@@ -33,16 +33,15 @@
 "*"                 {if(USE_LEX_ONLY) {printf("MULTOP\n");} else {return yy::parser::make_MULTOP(yytext);}}
 "/"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {return yy::parser::make_DIVOP(yytext);}}
 "^"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {return yy::parser::make_POWER(yytext);}}   
-"&"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
-"|"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
-"="                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
-"!="                {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
-"<"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
-">"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
-"<="                {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
-">="                {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
-":="                {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {return yy::parser::make_ASSIGN(yytext);}}
-"!"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {}}
+"&"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {return yy::parser::make_AND(yytext);}}
+"|"                 {if(USE_LEX_ONLY) {printf("OPERATOR\n");} else {return yy::parser::make_OR(yytext);}}
+"="                 {if(USE_LEX_ONLY) { printf("EQOP\n"); }   else { return yy::parser::make_EQTO(yytext); } }
+"!="                {if(USE_LEX_ONLY) { printf("NEQOP\n"); }   else { return yy::parser::make_NEQ(yytext); } }
+"<="                {if(USE_LEX_ONLY) { printf("LEOP\n"); }    else { return yy::parser::make_LE(yytext); } }
+">="                {if(USE_LEX_ONLY) { printf("GEOP\n"); }    else { return yy::parser::make_GE(yytext); } }
+"<"                 {if(USE_LEX_ONLY) { printf("LTOP\n"); }    else { return yy::parser::make_LT(yytext); } }
+">"                 {if(USE_LEX_ONLY) { printf("GTOP\n"); }    else { return yy::parser::make_GT(yytext); } }
+":="  { if(USE_LEX_ONLY) { printf("ASSIGNOP\n"); } else { return yy::parser::make_ASSIGN(yytext); } }
 
     /* SYMBOLS */
 "("                 {if(USE_LEX_ONLY) {printf("LP\n");} else {return yy::parser::make_LP(yytext);}}
@@ -52,7 +51,7 @@
 "{"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {return yy::parser::make_LCB(yytext);}}
 "}"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {return yy::parser::make_RCB(yytext);}}
 "."                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {}}
-","                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {}}
+","                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {return yy::parser::make_COMMA(yytext);}}
 ":"                 {if(USE_LEX_ONLY) {printf("SYMBOL\n");} else {return yy::parser::make_COLON(yytext);}}
 
 
