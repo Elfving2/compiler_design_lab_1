@@ -1,0 +1,8 @@
+return 1 + 2
+return fib() + fib()
+return fib(1 + 2)
+return fib(1 + 2) + fib(1 + 2)
+return true
+return false
+
+total := total + values[]
