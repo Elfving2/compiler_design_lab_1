@@ -385,8 +385,13 @@ namespace yy {
       // root
       // statements
       // expression
+      // condition
+      // relation
       // math_expression
-      // arithmetic_operators
+      // term
+      // factor
+      // unary
+      // primary
       // type
       // variable
       // read
@@ -397,6 +402,7 @@ namespace yy {
       // for_statement
       // relational_operators
       // if_statement
+      // else_statement
       // number_array
       // array_decl
       // array_call
@@ -405,6 +411,7 @@ namespace yy {
       // function_decl
       // function_call
       // parameters
+      // arguments
       char dummy1[sizeof (Node *)];
 
       // PLUSOP
@@ -451,6 +458,10 @@ namespace yy {
       // INT_ARRAY_TYPE
       // FLOAT_ARRAY_TYPE
       // VOID_TYPE
+      // BOOLEAN_TYPE
+      // EXCLAMATION_MARK
+      // BREAK
+      // CONTINUE
       char dummy2[sizeof (std::string)];
     };
 
@@ -538,7 +549,11 @@ namespace yy {
     FALSE = 298,                   // FALSE
     INT_ARRAY_TYPE = 299,          // INT_ARRAY_TYPE
     FLOAT_ARRAY_TYPE = 300,        // FLOAT_ARRAY_TYPE
-    VOID_TYPE = 301                // VOID_TYPE
+    VOID_TYPE = 301,               // VOID_TYPE
+    BOOLEAN_TYPE = 302,            // BOOLEAN_TYPE
+    EXCLAMATION_MARK = 303,        // EXCLAMATION_MARK
+    BREAK = 304,                   // BREAK
+    CONTINUE = 305                 // CONTINUE
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -555,7 +570,7 @@ namespace yy {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 47, ///< Number of tokens.
+        YYNTOKENS = 51, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -604,30 +619,41 @@ namespace yy {
         S_INT_ARRAY_TYPE = 44,                   // INT_ARRAY_TYPE
         S_FLOAT_ARRAY_TYPE = 45,                 // FLOAT_ARRAY_TYPE
         S_VOID_TYPE = 46,                        // VOID_TYPE
-        S_YYACCEPT = 47,                         // $accept
-        S_root = 48,                             // root
-        S_statements = 49,                       // statements
-        S_expression = 50,                       // expression
-        S_math_expression = 51,                  // math_expression
-        S_arithmetic_operators = 52,             // arithmetic_operators
-        S_type = 53,                             // type
-        S_variable = 54,                         // variable
-        S_read = 55,                             // read
-        S_print = 56,                            // print
-        S_return = 57,                           // return
-        S_block = 58,                            // block
-        S_main = 59,                             // main
-        S_for_statement = 60,                    // for_statement
-        S_relational_operators = 61,             // relational_operators
-        S_if_statement = 62,                     // if_statement
-        S_number_array = 63,                     // number_array
-        S_array_decl = 64,                       // array_decl
-        S_array_call = 65,                       // array_call
-        S_comment = 66,                          // comment
-        S_class = 67,                            // class
-        S_function_decl = 68,                    // function_decl
-        S_function_call = 69,                    // function_call
-        S_parameters = 70                        // parameters
+        S_BOOLEAN_TYPE = 47,                     // BOOLEAN_TYPE
+        S_EXCLAMATION_MARK = 48,                 // EXCLAMATION_MARK
+        S_BREAK = 49,                            // BREAK
+        S_CONTINUE = 50,                         // CONTINUE
+        S_YYACCEPT = 51,                         // $accept
+        S_root = 52,                             // root
+        S_statements = 53,                       // statements
+        S_expression = 54,                       // expression
+        S_condition = 55,                        // condition
+        S_relation = 56,                         // relation
+        S_math_expression = 57,                  // math_expression
+        S_term = 58,                             // term
+        S_factor = 59,                           // factor
+        S_unary = 60,                            // unary
+        S_primary = 61,                          // primary
+        S_type = 62,                             // type
+        S_variable = 63,                         // variable
+        S_read = 64,                             // read
+        S_print = 65,                            // print
+        S_return = 66,                           // return
+        S_block = 67,                            // block
+        S_main = 68,                             // main
+        S_for_statement = 69,                    // for_statement
+        S_relational_operators = 70,             // relational_operators
+        S_if_statement = 71,                     // if_statement
+        S_else_statement = 72,                   // else_statement
+        S_number_array = 73,                     // number_array
+        S_array_decl = 74,                       // array_decl
+        S_array_call = 75,                       // array_call
+        S_comment = 76,                          // comment
+        S_class = 77,                            // class
+        S_function_decl = 78,                    // function_decl
+        S_function_call = 79,                    // function_call
+        S_parameters = 80,                       // parameters
+        S_arguments = 81                         // arguments
       };
     };
 
@@ -665,8 +691,13 @@ namespace yy {
       case symbol_kind::S_root: // root
       case symbol_kind::S_statements: // statements
       case symbol_kind::S_expression: // expression
+      case symbol_kind::S_condition: // condition
+      case symbol_kind::S_relation: // relation
       case symbol_kind::S_math_expression: // math_expression
-      case symbol_kind::S_arithmetic_operators: // arithmetic_operators
+      case symbol_kind::S_term: // term
+      case symbol_kind::S_factor: // factor
+      case symbol_kind::S_unary: // unary
+      case symbol_kind::S_primary: // primary
       case symbol_kind::S_type: // type
       case symbol_kind::S_variable: // variable
       case symbol_kind::S_read: // read
@@ -677,6 +708,7 @@ namespace yy {
       case symbol_kind::S_for_statement: // for_statement
       case symbol_kind::S_relational_operators: // relational_operators
       case symbol_kind::S_if_statement: // if_statement
+      case symbol_kind::S_else_statement: // else_statement
       case symbol_kind::S_number_array: // number_array
       case symbol_kind::S_array_decl: // array_decl
       case symbol_kind::S_array_call: // array_call
@@ -685,6 +717,7 @@ namespace yy {
       case symbol_kind::S_function_decl: // function_decl
       case symbol_kind::S_function_call: // function_call
       case symbol_kind::S_parameters: // parameters
+      case symbol_kind::S_arguments: // arguments
         value.move< Node * > (std::move (that.value));
         break;
 
@@ -732,6 +765,10 @@ namespace yy {
       case symbol_kind::S_INT_ARRAY_TYPE: // INT_ARRAY_TYPE
       case symbol_kind::S_FLOAT_ARRAY_TYPE: // FLOAT_ARRAY_TYPE
       case symbol_kind::S_VOID_TYPE: // VOID_TYPE
+      case symbol_kind::S_BOOLEAN_TYPE: // BOOLEAN_TYPE
+      case symbol_kind::S_EXCLAMATION_MARK: // EXCLAMATION_MARK
+      case symbol_kind::S_BREAK: // BREAK
+      case symbol_kind::S_CONTINUE: // CONTINUE
         value.move< std::string > (std::move (that.value));
         break;
 
@@ -807,8 +844,13 @@ switch (yykind)
       case symbol_kind::S_root: // root
       case symbol_kind::S_statements: // statements
       case symbol_kind::S_expression: // expression
+      case symbol_kind::S_condition: // condition
+      case symbol_kind::S_relation: // relation
       case symbol_kind::S_math_expression: // math_expression
-      case symbol_kind::S_arithmetic_operators: // arithmetic_operators
+      case symbol_kind::S_term: // term
+      case symbol_kind::S_factor: // factor
+      case symbol_kind::S_unary: // unary
+      case symbol_kind::S_primary: // primary
       case symbol_kind::S_type: // type
       case symbol_kind::S_variable: // variable
       case symbol_kind::S_read: // read
@@ -819,6 +861,7 @@ switch (yykind)
       case symbol_kind::S_for_statement: // for_statement
       case symbol_kind::S_relational_operators: // relational_operators
       case symbol_kind::S_if_statement: // if_statement
+      case symbol_kind::S_else_statement: // else_statement
       case symbol_kind::S_number_array: // number_array
       case symbol_kind::S_array_decl: // array_decl
       case symbol_kind::S_array_call: // array_call
@@ -827,6 +870,7 @@ switch (yykind)
       case symbol_kind::S_function_decl: // function_decl
       case symbol_kind::S_function_call: // function_call
       case symbol_kind::S_parameters: // parameters
+      case symbol_kind::S_arguments: // arguments
         value.template destroy< Node * > ();
         break;
 
@@ -874,6 +918,10 @@ switch (yykind)
       case symbol_kind::S_INT_ARRAY_TYPE: // INT_ARRAY_TYPE
       case symbol_kind::S_FLOAT_ARRAY_TYPE: // FLOAT_ARRAY_TYPE
       case symbol_kind::S_VOID_TYPE: // VOID_TYPE
+      case symbol_kind::S_BOOLEAN_TYPE: // BOOLEAN_TYPE
+      case symbol_kind::S_EXCLAMATION_MARK: // EXCLAMATION_MARK
+      case symbol_kind::S_BREAK: // BREAK
+      case symbol_kind::S_CONTINUE: // CONTINUE
         value.template destroy< std::string > ();
         break;
 
@@ -1730,6 +1778,66 @@ switch (yykind)
         return symbol_type (token::VOID_TYPE, v);
       }
 #endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_BOOLEAN_TYPE (std::string v)
+      {
+        return symbol_type (token::BOOLEAN_TYPE, std::move (v));
+      }
+#else
+      static
+      symbol_type
+      make_BOOLEAN_TYPE (const std::string& v)
+      {
+        return symbol_type (token::BOOLEAN_TYPE, v);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_EXCLAMATION_MARK (std::string v)
+      {
+        return symbol_type (token::EXCLAMATION_MARK, std::move (v));
+      }
+#else
+      static
+      symbol_type
+      make_EXCLAMATION_MARK (const std::string& v)
+      {
+        return symbol_type (token::EXCLAMATION_MARK, v);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_BREAK (std::string v)
+      {
+        return symbol_type (token::BREAK, std::move (v));
+      }
+#else
+      static
+      symbol_type
+      make_BREAK (const std::string& v)
+      {
+        return symbol_type (token::BREAK, v);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_CONTINUE (std::string v)
+      {
+        return symbol_type (token::CONTINUE, std::move (v));
+      }
+#else
+      static
+      symbol_type
+      make_CONTINUE (const std::string& v)
+      {
+        return symbol_type (token::CONTINUE, v);
+      }
+#endif
 
 
     class context
@@ -2058,8 +2166,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 308,     ///< Last index in yytable_.
-      yynnts_ = 24,  ///< Number of nonterminal symbols.
+      yylast_ = 374,     ///< Last index in yytable_.
+      yynnts_ = 31,  ///< Number of nonterminal symbols.
       yyfinal_ = 3 ///< Termination state number.
     };
 
@@ -2107,10 +2215,10 @@ switch (yykind)
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
       35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,    46
+      45,    46,    47,    48,    49,    50
     };
     // Last valid token kind.
-    const int code_max = 301;
+    const int code_max = 305;
 
     if (t <= 0)
       return symbol_kind::S_YYEOF;
@@ -2131,8 +2239,13 @@ switch (yykind)
       case symbol_kind::S_root: // root
       case symbol_kind::S_statements: // statements
       case symbol_kind::S_expression: // expression
+      case symbol_kind::S_condition: // condition
+      case symbol_kind::S_relation: // relation
       case symbol_kind::S_math_expression: // math_expression
-      case symbol_kind::S_arithmetic_operators: // arithmetic_operators
+      case symbol_kind::S_term: // term
+      case symbol_kind::S_factor: // factor
+      case symbol_kind::S_unary: // unary
+      case symbol_kind::S_primary: // primary
       case symbol_kind::S_type: // type
       case symbol_kind::S_variable: // variable
       case symbol_kind::S_read: // read
@@ -2143,6 +2256,7 @@ switch (yykind)
       case symbol_kind::S_for_statement: // for_statement
       case symbol_kind::S_relational_operators: // relational_operators
       case symbol_kind::S_if_statement: // if_statement
+      case symbol_kind::S_else_statement: // else_statement
       case symbol_kind::S_number_array: // number_array
       case symbol_kind::S_array_decl: // array_decl
       case symbol_kind::S_array_call: // array_call
@@ -2151,6 +2265,7 @@ switch (yykind)
       case symbol_kind::S_function_decl: // function_decl
       case symbol_kind::S_function_call: // function_call
       case symbol_kind::S_parameters: // parameters
+      case symbol_kind::S_arguments: // arguments
         value.copy< Node * > (YY_MOVE (that.value));
         break;
 
@@ -2198,6 +2313,10 @@ switch (yykind)
       case symbol_kind::S_INT_ARRAY_TYPE: // INT_ARRAY_TYPE
       case symbol_kind::S_FLOAT_ARRAY_TYPE: // FLOAT_ARRAY_TYPE
       case symbol_kind::S_VOID_TYPE: // VOID_TYPE
+      case symbol_kind::S_BOOLEAN_TYPE: // BOOLEAN_TYPE
+      case symbol_kind::S_EXCLAMATION_MARK: // EXCLAMATION_MARK
+      case symbol_kind::S_BREAK: // BREAK
+      case symbol_kind::S_CONTINUE: // CONTINUE
         value.copy< std::string > (YY_MOVE (that.value));
         break;
 
@@ -2235,8 +2354,13 @@ switch (yykind)
       case symbol_kind::S_root: // root
       case symbol_kind::S_statements: // statements
       case symbol_kind::S_expression: // expression
+      case symbol_kind::S_condition: // condition
+      case symbol_kind::S_relation: // relation
       case symbol_kind::S_math_expression: // math_expression
-      case symbol_kind::S_arithmetic_operators: // arithmetic_operators
+      case symbol_kind::S_term: // term
+      case symbol_kind::S_factor: // factor
+      case symbol_kind::S_unary: // unary
+      case symbol_kind::S_primary: // primary
       case symbol_kind::S_type: // type
       case symbol_kind::S_variable: // variable
       case symbol_kind::S_read: // read
@@ -2247,6 +2371,7 @@ switch (yykind)
       case symbol_kind::S_for_statement: // for_statement
       case symbol_kind::S_relational_operators: // relational_operators
       case symbol_kind::S_if_statement: // if_statement
+      case symbol_kind::S_else_statement: // else_statement
       case symbol_kind::S_number_array: // number_array
       case symbol_kind::S_array_decl: // array_decl
       case symbol_kind::S_array_call: // array_call
@@ -2255,6 +2380,7 @@ switch (yykind)
       case symbol_kind::S_function_decl: // function_decl
       case symbol_kind::S_function_call: // function_call
       case symbol_kind::S_parameters: // parameters
+      case symbol_kind::S_arguments: // arguments
         value.move< Node * > (YY_MOVE (s.value));
         break;
 
@@ -2302,6 +2428,10 @@ switch (yykind)
       case symbol_kind::S_INT_ARRAY_TYPE: // INT_ARRAY_TYPE
       case symbol_kind::S_FLOAT_ARRAY_TYPE: // FLOAT_ARRAY_TYPE
       case symbol_kind::S_VOID_TYPE: // VOID_TYPE
+      case symbol_kind::S_BOOLEAN_TYPE: // BOOLEAN_TYPE
+      case symbol_kind::S_EXCLAMATION_MARK: // EXCLAMATION_MARK
+      case symbol_kind::S_BREAK: // BREAK
+      case symbol_kind::S_CONTINUE: // CONTINUE
         value.move< std::string > (YY_MOVE (s.value));
         break;
 
@@ -2370,7 +2500,7 @@ switch (yykind)
 
 
 } // yy
-#line 2374 "parser.tab.hh"
+#line 2504 "parser.tab.hh"
 
 
 

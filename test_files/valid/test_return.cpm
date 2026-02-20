@@ -1,8 +1,5 @@
-return 1 + 2
-return fib() + fib()
-return fib(1 + 2)
-return fib(1 + 2) + fib(1 + 2)
-return true
-return false
-
-total := total + values[]
+for ( , true , cont := cont ) {
+  j := j - 1
+  aux := number[j]
+  if (!(v < aux)) break
+}

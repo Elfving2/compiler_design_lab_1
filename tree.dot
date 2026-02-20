@@ -1,91 +1,75 @@
 digraph {
 n0 [label="Statements:"];
-n1 [label="Class:"];
-n2 [label="Id:"];
+n1 [label="for_loop:"];
+n2 [label="Init:"];
+n3 [label="(Empty):"];
+n2 -> n3
 n1 -> n2
-n3 [label="Block:"];
-n4 [label="Statements:"];
-n5 [label="function_Decl:"];
-n6 [label="parameters:"];
-n7 [label="Int_type:"];
-n8 [label="Id:"];
+n4 [label="Boolean:"];
+n5 [label=":true"];
+n4 -> n5
+n1 -> n4
+n6 [label="Update:"];
+n7 [label="Identifier:"];
+n8 [label=":cont"];
 n7 -> n8
 n6 -> n7
-n5 -> n6
-n9 [label="Int_type:"];
-n5 -> n9
-n10 [label="Block:"];
-n11 [label="Statements:"];
-n12 [label="If:"];
-n13 [label="Less_than:"];
-n14 [label="Id:"];
+n9 [label="Identifier:"];
+n10 [label=":cont"];
+n9 -> n10
+n6 -> n9
+n1 -> n6
+n11 [label="Block:"];
+n12 [label="Statements:"];
+n13 [label="Re_assign:"];
+n14 [label="Identifier:"];
+n15 [label=":j"];
+n14 -> n15
 n13 -> n14
-n15 [label="Int:"];
-n13 -> n15
-n12 -> n13
-n16 [label="Block:"];
-n17 [label="Statements:"];
-n18 [label="Return:"];
-n19 [label="Int:"];
-n18 -> n19
+n16 [label="Sub:"];
+n17 [label="Identifier:"];
+n18 [label=":j"];
 n17 -> n18
 n16 -> n17
-n12 -> n16
-n11 -> n12
-n10 -> n11
-n5 -> n10
-n4 -> n5
-n3 -> n4
-n1 -> n3
-n0 -> n1
-n20 [label="main:"];
-n21 [label="Int_type:"];
-n20 -> n21
-n22 [label="Block:"];
-n23 [label="Statements:"];
-n24 [label="variable:"];
-n25 [label="Id:"];
-n24 -> n25
-n26 [label="Id:"];
-n24 -> n26
-n27 [label="get_function:"];
-n24 -> n27
-n23 -> n24
-n28 [label="Variable:"];
-n29 [label="Volatile:"];
-n28 -> n29
-n30 [label="Id:"];
-n28 -> n30
-n31 [label="Int_type:"];
-n28 -> n31
-n32 [label="Int:"];
-n28 -> n32
-n23 -> n28
-n33 [label="for_loop:"];
-n34 [label="Less_than_or_equal to:"];
-n35 [label="Int:"];
-n36 [label="Id:"];
-n35 -> n36
-n34 -> n35
-n37 [label="Int:"];
-n34 -> n37
-n33 -> n34
-n38 [label="Block:"];
-n39 [label="Statements:"];
-n40 [label="Print:"];
-n41 [label="get_function:"];
-n42 [label="Id:"];
-n41 -> n42
-n40 -> n41
-n39 -> n40
-n38 -> n39
-n33 -> n38
-n23 -> n33
-n43 [label="Return:"];
-n44 [label="Int:"];
-n43 -> n44
-n23 -> n43
+n19 [label="Integer:"];
+n20 [label=":1"];
+n19 -> n20
+n16 -> n19
+n13 -> n16
+n12 -> n13
+n21 [label="Re_assign:"];
+n22 [label="Identifier:"];
+n23 [label=":aux"];
 n22 -> n23
-n20 -> n22
-n0 -> n20
+n21 -> n22
+n24 [label="Array:"];
+n25 [label="Identifier:"];
+n26 [label=":number"];
+n25 -> n26
+n24 -> n25
+n27 [label="Index:"];
+n28 [label="Identifier:"];
+n29 [label=":j"];
+n28 -> n29
+n27 -> n28
+n24 -> n27
+n21 -> n24
+n12 -> n21
+n30 [label="If_statement:"];
+n31 [label="Not:"];
+n32 [label=":<"];
+n33 [label="Identifier:"];
+n34 [label=":v"];
+n33 -> n34
+n32 -> n33
+n35 [label="Identifier:"];
+n36 [label=":aux"];
+n35 -> n36
+n32 -> n35
+n31 -> n32
+n30 -> n31
+n12 -> n30
+n11 -> n12
+n1 -> n11
+n0 -> n1
 }

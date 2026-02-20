@@ -1,5 +1,4 @@
 class OP {
-
   arithmetic : int() {
     volatile b : int := 4
     volatile c : int := 8
