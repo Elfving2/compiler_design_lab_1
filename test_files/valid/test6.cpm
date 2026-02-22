@@ -1,3 +1,4 @@
+
 class Fibonacci {
   fib(n : int): int {
     if (n < 3) {

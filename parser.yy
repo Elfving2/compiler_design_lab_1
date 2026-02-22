@@ -1,5 +1,12 @@
 /* Skeleton and definitions for generating a LALR(1) parser in C++ */
 %skeleton "lalr1.cc" 
+%glr-parser 
+/*
+  Added grl-praser that fixes shift/reduce error in parser with ID LP RP and ID LP expression RP
+  it dosent know if it should create a function or a math expression so i use glr-praser to look more
+  one token ahead
+
+*/
 %defines
 %define parse.error verbose
 %define api.value.type variant
@@ -25,778 +32,600 @@
 /* Tokens represent the smallest units of the language, like operators and parentheses */
 
 
-%token <std::string> PLUSOP MINUSOP MULTOP INT LP RP FLOAT DIVOP POWER FLOAT_TYPE INT_TYPE VOLATILE ID COLON ASSIGN RETURN PRINT LCB RCB MAIN FOR COMMA AND OR EQTO NEQ LE GE LT GT IF SLB SRB COMMENT CLASS READ DOT LENGTH ELSE TRUE FALSE INT_ARRAY_TYPE FLOAT_ARRAY_TYPE VOID_TYPE BOOLEAN_TYPE EXCLAMATION_MARK BREAK CONTINUE
+
+%token <std::string> PLUSOP MINUSOP MULTOP DIVOP POWER
+%token <std::string> OR AND EXCLAMATION_MARK
+%token <std::string> EQTO NEQ LE GE LT GT
+%token <std::string> LP RP SLB SRB LCB RCB DOT COMMA COLON ASSIGN
+%token <std::string> RETURN PRINT READ BREAK CONTINUE
+%token <std::string> IF ELSE FOR MAIN CLASS LENGTH
+%token <std::string> INT FLOAT TRUE FALSE
+%token <std::string> ID COMMENT
+%token <std::string> INT_TYPE FLOAT_TYPE BOOLEAN_TYPE VOID_TYPE VOLATILE
+%token <std::string> INT_ARRAY_TYPE FLOAT_ARRAY_TYPE
 
 %token END 0 "end of file"
 
+
 /* Operator precedence and associativity rules */
 /* Used to resolve ambiguities in parsing expressions See https://www.gnu.org/software/bison/manual/bison.html#Precedence-Decl */ 
-%left PLUSOP MINUSOP
-%left MULTOP DIVOP
-%right POWER
 
-%left OR
-%left AND
-%right EXCLAMATION_MARK
 
 /* Specify types for non-terminals in the grammar */
 /* The type specifies the data type of the values associated with these non-terminals */
-%type <Node *> root statements expression condition relation math_expression unary term factor primary variable type return print block main for_statement relational_operators if_statement number_array array_call array_decl comment class function_decl function_call parameters read arguments else_statement
+%type <Node *> root block statements statement array_call class_call if_body
+%type <Node *> expression logical_or logical_and equality relational additive multiplicative unary primary type values func_def main_def class_def
+%type <Node *> assignment if_stmt for_stmt print_stmt read_stmt return_stmt break_stmt continue_stmt expr_stmt power comment parameters func_call arguments
+
 
 
 /* Grammar rules section */ 
 /* This section defines the production rules for the language being parsed */
+%precedence IFX
+%precedence ELSE
+
 %%
-root:       
-  statements {
+root:
+  statements END
+  {
     root = $1;
-};
-
-statements :
-  %empty {
-      $$ = new Node("Statements", "", yylineno);
-    }
-  | 
-  statements expression {
-      $$ = $1;
-      $$->children.push_back($2);
-    }
-  ; 
-
-expression:
-  variable {
-    $$ = $1;
   }
-  |
-  read {
-    $$ = $1; 
-  }
-  |
-  print {
-    $$ = $1;
-  }
-  |
-  block {
-    $$ = $1;
-  }
-  |
-  main {
-    $$ = $1;
-  }
-  |
-  for_statement {
-    $$ = $1;
-  }
-  |
-  if_statement {
-    $$ = $1;
-  }
-  |
-  array_decl {
-    $$ = $1;
-  }
-  |
-  comment {
-    $$ = $1;
-  }
-  |
-  return {
-    $$ = $1;
-  }
-  |
-  class {
-    $$ = $1;
-  }
-  |
-  function_decl {
-    $$ = $1;
-  }
-  |
-  function_call {
-    $$ = $1;
-  }
-  |
-  else_statement {
-    $$ = $1;
-  }
-  ;
-condition:
-    condition OR condition {
-      $$ = new Node("Or", "", yylineno);
-      $$->children.push_back($1);
-      $$->children.push_back($3);
-    }
-  | condition AND condition {
-      $$ = new Node("And", "", yylineno);
-      $$->children.push_back($1);
-      $$->children.push_back($3);
-    }
-  | EXCLAMATION_MARK condition {
-      $$ = new Node("Not", "", yylineno);
-      $$->children.push_back($2);
-    }
-  | LP condition RP {
-      $$ = $2;
-    }
-  | relation {
-      $$ = $1;
-    }
-  | TRUE {
-      $$ = new Node("Boolean", "", yylineno);
-      $$->children.push_back(new Node("", $1, yylineno));
-    }
-  | FALSE {
-      $$ = new Node("Boolean", "", yylineno);
-      $$->children.push_back(new Node("", $1, yylineno));
-    }
-  ;
-
-relation:
-    math_expression relational_operators math_expression {
-      Node *op = $2;
-      op->children.push_back($1);
-      op->children.push_back($3);
-      $$ = op;
-    }
-  ;
-
-math_expression:
-      math_expression PLUSOP term {
-          $$ = new Node("Add","",yylineno);
-          $$->children.push_back($1);
-          $$->children.push_back($3);
-      }
-    | math_expression MINUSOP term {
-          $$ = new Node("Sub","",yylineno);
-          $$->children.push_back($1);
-          $$->children.push_back($3);
-      }
-    | term {
-          $$ = $1;
-      }
-;
-
-term:
-      term MULTOP factor {
-          $$ = new Node("Multiplication", "", yylineno);
-          $$->children.push_back($1);
-          $$->children.push_back($3);
-      }
-    | term DIVOP factor {
-          $$ = new Node("Division","",yylineno);
-          $$->children.push_back($1);
-          $$->children.push_back($3);
-      }
-    | factor {
-          $$ = $1;
-      }
-;
-
-factor:
-      unary {
-          $$ = $1;
-      }
-    | unary POWER factor {
-          $$ = new Node("Pow","",yylineno);
-          $$->children.push_back($1);
-          $$->children.push_back($3);
-      }
-;
-
-unary:
-      MINUSOP unary {
-          $$ = new Node("Negate", "", yylineno);
-          $$->children.push_back($2);
-      }
-    | primary {
-          $$ = $1;
-      }
-;
-
-
-primary:
-      ID {
-          Node * identifier = new Node("Identifier", "", yylineno);
-          identifier->children.push_back(new Node("", $1, yylineno));
-          $$ = identifier;
-      }
-    | INT {
-          $$ = new Node("Integer", "", yylineno);
-          $$->children.push_back(new Node("", $1, yylineno));
-      }
-    | FLOAT {
-          $$ = new Node("Float", "", yylineno);
-          $$->children.push_back(new Node("", $1, yylineno));
-      }
-    | function_call {
-          $$ = $1;
-      }
-    | array_call {
-          $$ = $1;
-      }
-    | LP math_expression RP {
-          $$ = $2;
-      }
-    ;
-
-
-
-type: 
-  INT_TYPE {
-    Node * type = new Node("Type", "", yylineno);
-    type->children.push_back(new Node("Integer", "", yylineno));
-    $$ = type;
-  }
-  |
-  FLOAT_TYPE {
-    Node * type = new Node("Type", "", yylineno);
-    type->children.push_back(new Node("Float", "", yylineno));
-    $$ = type;
-  }
-  |
-  INT_ARRAY_TYPE {
-    Node * type = new Node("Type", "", yylineno);
-    type->children.push_back(new Node("Integer_array", "", yylineno));
-    $$ = type;
-  }
-  |
-  FLOAT_ARRAY_TYPE {
-    Node * type = new Node("Type", "", yylineno);
-    type->children.push_back(new Node("Float_array", "", yylineno));
-    $$ = type;
-  }
-  |
-  VOID_TYPE {
-    Node * type = new Node("Type", "", yylineno);
-    type->children.push_back(new Node("Void", "", yylineno));
-    $$ = type;
-  }
-  |
-  BOOLEAN_TYPE {
-    Node * type = new Node("Type", "", yylineno);
-    type->children.push_back(new Node("Boolean", "", yylineno));
-    $$ = type;
+  | block END {
+    root = $1;
   }
   ;
 
-variable:
-  VOLATILE ID COLON type ASSIGN math_expression {
-    $$ = new Node("VarDecl", "", yylineno);
-
-    Node * modifier = new Node("Modifier", "", yylineno);
-    modifier->children.push_back(new Node("Volatile", "", yylineno));
-
-
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $2, yylineno));
-    
-     $$->children.push_back(modifier);
-     $$->children.push_back(identifier);
-     $$->children.push_back($4);
-     $$->children.push_back($6);
-    
+block: 
+  LCB statements RCB {
+    $$ = $2;
   }
-  |
-  VOLATILE ID COLON type {
+  ;
 
-    $$ = new Node("VarDecl", "", yylineno);
-
-    Node * modifier = new Node("Modifier", "", yylineno);
-    modifier->children.push_back(new Node("Volatile", "", yylineno));
-
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $2, yylineno));
-
-     $$->children.push_back(modifier);
-     $$->children.push_back(identifier);
-     $$->children.push_back($4);
-
+statements:
+  statement {
+    $$ = new Node("Block", "", yylineno);
+    $$->children.push_back($1);
   }
-  |
-  VOLATILE ID COLON type ASSIGN ID LP RP DOT function_call {
-    $$ = new Node("Variable", "", yylineno);
-    $$->children.push_back(new Node("Volatile", "", yylineno));
-    $$->children.push_back(new Node("Id", "", yylineno));
+| statements statement {
+  $$ = $1;
+  $$->children.push_back($2);
+}
+;
+
+statement: 
+  main_def
+  | class_def
+  | func_def
+  | assignment
+  | if_stmt
+  | for_stmt
+  | print_stmt
+  | read_stmt
+  | return_stmt
+  | break_stmt
+  | continue_stmt
+  | expr_stmt
+  | type
+  | comment
+  ;
+
+
+main_def:
+  MAIN LP RP COLON INT_TYPE block {
+    $$ = new Node("Main", $5, yylineno);
+    $$->children.push_back($6);
+  }
+
+
+class_def:
+  CLASS ID block {
+    $$ = new Node("Class", $2, yylineno);
+    $$->children.push_back($3);
+  }
+  ;
+
+class_call:
+  ID LP RP {
+    $$ = new Node("Class", $1, yylineno);
+  }
+  ;
+
+assignment:
+  VOLATILE ID COLON type ASSIGN expression {
+    $$ = new Node("Assign", "", yylineno);
+    $$->children.push_back(new Node("Modifier", $1, yylineno));
+    $$->children.push_back(new Node("Identifier", $2, yylineno));
     $$->children.push_back($4);
-    $$->children.push_back($10);
-  }
-  |
-  VOLATILE ID COLON ID ASSIGN function_call {
-    $$ = new Node("Variaasasdasdble", "", yylineno);
-    $$->children.push_back(new Node("Volatile", "", yylineno));
-    $$->children.push_back(new Node("Id", "", yylineno));
     $$->children.push_back($6);
   }
   |
-  ID DOT function_call {
-    $$ = new Node("Id", "", yylineno);
+  ID COLON type ASSIGN expression {
+    $$ = new Node("Assign", "", yylineno);
+    $$->children.push_back(new Node("Identifier", $1, yylineno));
     $$->children.push_back($3);
-  }
-  |
-  ID ASSIGN math_expression {
-    $$ = new Node("Re_assign", "", yylineno);
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $1, yylineno));
-    $$->children.push_back(identifier);
-    $$->children.push_back($3);
-  }
-  |
-  VOLATILE ID COLON type ASSIGN ID DOT function_call {
-    $$ = new Node("Variable", "", yylineno);
-    $$->children.push_back(new Node("Id", "", yylineno));
-    $$->children.push_back($4);
-  }
-  |
-  ID ASSIGN condition {
-    $$ = new Node("Re_assign", "", yylineno);
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $1, yylineno));
-    $$->children.push_back(identifier);
-    $$->children.push_back($3);
-  }
-  ;
-
-read:
-  READ LP ID RP {
-    $$ = new Node("Read", "", yylineno);
-    $$->children.push_back(new Node("Id", "", yylineno)); 
-  }
-  ;
-
-print:
-  PRINT LP math_expression RP {
-    $$ = new Node("Print", "", yylineno);
-    $$->children.push_back($3);
-  }
-  |
-  PRINT LP ID DOT function_call RP {
-    $$ = new Node("Print", "", yylineno);
     $$->children.push_back($5);
   }
   |
-  PRINT LP ID LP RP DOT function_call RP {
-    $$ = new Node("Print", "", yylineno);
-    Node * class_func_call = new Node("Id", "", yylineno);
-    class_func_call->children.push_back(new Node("Dot", "", yylineno));
-    class_func_call->children.push_back($7);
+  VOLATILE ID COLON type {
+    $$ = new Node("Decloration", "", yylineno);
+    $$->children.push_back(new Node("Modifier", $1, yylineno));
+    $$->children.push_back(new Node("Identifier", $2, yylineno));
+    $$->children.push_back($4);
+  }
+  | 
+  VOLATILE ID COLON type ASSIGN type SLB values SRB {
+    $$ = new Node("Assign", "", yylineno);
+    $$->children.push_back(new Node("Modifier", $1, yylineno));
+    $$->children.push_back(new Node("Identifier", $2, yylineno));
+    $$->children.push_back($4);
+    $$->children.push_back($8);
+  }
+  |
+  array_call ASSIGN array_call {
+    $$ = new Node("Assign", "", yylineno);
+    $$->children.push_back($1);
+    $$->children.push_back($3);
+  }
+  |
+  ID COLON ID ASSIGN class_call {
+    $$ = new Node("Assign", "", yylineno);
 
-    $$->children.push_back(class_func_call);
-    
+    $$->children.push_back(new Node("Identifier", $1, yylineno));
+    $$->children.push_back(new Node("Type", $3, yylineno));
+    $$->children.push_back($5);
+  }
+  |
+  VOLATILE ID COLON ID ASSIGN class_call {
+    $$ = new Node("Assign", "", yylineno);
+    $$->children.push_back(new Node("Modifier", $1, yylineno));
+    $$->children.push_back(new Node("Identifier", $2, yylineno));
+    $$->children.push_back(new Node("Class", $4, yylineno));
+    $$->children.push_back($6);
+  }
+  |
+  VOLATILE ID COLON type ASSIGN class_call DOT func_call {
+    $$ = new Node("Assign", "", yylineno);
+    $$->children.push_back(new Node("Modifier", $1, yylineno));
+    $$->children.push_back(new Node("Identifier", $2, yylineno));
+    $$->children.push_back($4);
+    Node * c = $6;
+    c->children.push_back($8);
+    $$->children.push_back(c);
+  }
+  |
+  VOLATILE ID COLON type ASSIGN ID DOT func_call {
+    $$ = new Node("Assign", "", yylineno);
+    $$->children.push_back(new Node("Modifier", $1, yylineno));
+    $$->children.push_back(new Node("Identifier", $2, yylineno));
+    $$->children.push_back($4);
+    Node * c = new Node("Class", $6, yylineno);
+    c->children.push_back($8);
+    $$->children.push_back(c);
+  }
+  |
+  ID ASSIGN expression {
+    $$ = new Node("Assign", "", yylineno);
+    $$->children.push_back(new Node("Identifier", $1, yylineno));
+    $$->children.push_back($3);
+  }
+  |
+  array_call ASSIGN ID {
+    $$ = new Node("Assaign", "", yylineno);
+    $$->children.push_back($1);
+    $$->children.push_back(new Node("Identifier", $3, yylineno));
+  }
+  |
+  ID ASSIGN type SLB values SRB {
+    $$ = new Node("Assaign", "", yylineno);
+    $$->children.push_back(new Node("Identifier", $1, yylineno));
+    Node * array = new Node("Array", "", yylineno);
+    array->children.push_back($3);
+    array->children.push_back($5);
+    $$->children.push_back(array);
+  }
+  |
+  ID DOT func_call {
+    $$ = new Node("Identifier", $1, yylineno);
+    $$->children.push_back($3);
   }
   ;
 
-return:
-  RETURN math_expression {
+
+parameters:
+  ID COLON type {
+    $$ = new Node("Parameters", "", yylineno);
+    Node * parameter = new Node("Parameter", "", yylineno);
+    parameter->children.push_back(new Node("Identifier", $1, yylineno));
+    parameter->children.push_back($3);
+    $$->children.push_back(parameter);
+  }
+  | 
+  parameters COMMA ID COLON type  {
+    $$ = $1;
+    Node * parameter = new Node("Parameter", "", yylineno);
+    parameter->children.push_back(new Node("Identifier", $3, yylineno));
+    parameter->children.push_back($5);
+    $$->children.push_back(parameter);
+  }
+  ;
+func_def:
+  ID LP parameters RP COLON type block {
+    $$ = new Node("function_def", "", yylineno);
+    $$->children.push_back(new Node("Identifier", $1, yylineno));
+    $$->children.push_back($3);
+    Node * return_type = new Node("Return_type", "", yylineno);
+    return_type->children.push_back($6);
+    $$->children.push_back(return_type);
+    $$->children.push_back($7);
+  }
+  | 
+  ID LP RP COLON type block {
+    $$ = new Node("function_def", "", yylineno);
+    $$->children.push_back(new Node("Identifier", $1, yylineno));
+    Node * return_type = new Node("Return_type", "", yylineno);
+    return_type->children.push_back($5);
+    $$->children.push_back(return_type);
+    $$->children.push_back($6);
+  }
+  |
+  ID COLON type LP RP block {
+    $$ = new Node("function_def", "", yylineno);
+    $$->children.push_back(new Node("Identifier", $1, yylineno));
+    Node * return_type = new Node("Return_type", "", yylineno);
+    return_type->children.push_back($3);
+    $$->children.push_back(return_type);
+    $$->children.push_back($6);
+  }
+  ;
+
+arguments:
+  %empty{ 
+    $$ = new Node("","", yylineno);
+  }
+  |
+  expression {
+    $$ = new Node("Arguments", "", yylineno);
+    $$->children.push_back($1);
+  }
+  |
+  arguments COMMA expression {
+    $$ = $1;
+    $$->children.push_back($3);
+  }
+  ;
+func_call:
+  ID LP arguments RP {
+    $$ = new Node("function_call", $1, yylineno);
+    $$->children.push_back($3);
+  }
+  ;
+
+
+
+
+if_body
+  : statement {
+    $$ = new Node("Block", "", yylineno);
+    $$->children.push_back($1);
+
+  }
+  | block
+  ;
+
+if_stmt:
+   IF LP expression RP if_body %prec IFX
+    {
+      $$ = new Node("If_statement", "", yylineno);
+      $$->children.push_back($3);
+      $$->children.push_back($5);
+    }
+  | IF LP expression RP if_body ELSE if_body
+    {
+      $$ = new Node("If_statement", "", yylineno);
+      $$->children.push_back($3);
+      $$->children.push_back($5);
+      Node * el = new Node("Else", "", yylineno);
+      el->children.push_back($7);
+      $$->children.push_back(el);
+    }
+  ;
+
+
+
+for_stmt: 
+  FOR LP ID ASSIGN expression COMMA relational COMMA ID ASSIGN expression RP block {
+    $$ = new Node("For_loop", "", yylineno);
+    Node * assign = new Node("Assign", "", yylineno);
+    assign->children.push_back(new Node("Identifier", $3, yylineno));
+    assign->children.push_back($5);
+    $$->children.push_back(assign);
+    $$->children.push_back($7);
+    
+    Node * assign2 = new Node("Assign", "", yylineno);
+    assign2->children.push_back(new Node("Identifier", $9, yylineno));
+    assign2->children.push_back($11);
+    $$->children.push_back(assign2);
+    $$->children.push_back($13);
+  }
+  |
+  FOR LP COMMA primary COMMA primary ASSIGN primary RP block {
+    $$ = new Node("For_loop", "", yylineno);
+    $$->children.push_back($4);
+    Node * assign = new Node("Assign", "", yylineno);
+    assign->children.push_back($6);
+    assign->children.push_back($8);
+    $$->children.push_back(assign);
+    $$->children.push_back($10);
+  }
+  ;
+
+print_stmt: 
+  PRINT LP ID DOT func_call RP {
+    $$ = new Node("Print", "", yylineno);
+    Node * identifier = new Node("Identifier", $3, yylineno);
+    identifier->children.push_back($5);
+    $$->children.push_back(identifier);
+  }
+  |
+  PRINT LP expression RP {
+    $$ = new Node("Print", "", yylineno);
+    $$->children.push_back($3);
+  }
+  |
+  PRINT LP class_call DOT func_call RP {
+    $$ = new Node("Print", "", yylineno);
+    Node * c = $3;
+    c->children.push_back($5);
+    $$->children.push_back(c);
+  }
+  ;
+
+read_stmt: 
+  READ LP expression RP {
+    $$ = new Node("Read", "", yylineno);
+    $$->children.push_back($3);
+  }
+  ;
+
+return_stmt: 
+  RETURN expression {
     $$ = new Node("Return", "", yylineno);
     $$->children.push_back($2);
   }
   ;
 
-block:
-  LCB statements RCB {
-    $$ = new Node("Block", "", yylineno);
-    $$->children.push_back($2);
-  }
-  |
+break_stmt: 
   BREAK {
-    $$ = new Node("Break", "", yylineno); 
-  }
-  |
-  CONTINUE {
-    $$ = new Node("Continue", "", yylineno);
+    $$ = new Node("Break", $1, yylineno);
   }
   ;
 
-main:
-  MAIN LP RP COLON type block {
-    $$ = new Node("main_function", "", yylineno);
-    $$->children.push_back($5);
-    $$->children.push_back($6);
-  }
+continue_stmt
+  : CONTINUE {}
   ;
 
-for_statement:
-  FOR LP COMMA condition COMMA ID ASSIGN math_expression RP block {
-    $$ = new Node("for_loop", "", yylineno);
-
-    // init (tom)
-    Node * init = new Node("Init", "", yylineno);
-    init->children.push_back(new Node("(Empty)", "", yylineno));
-
-    // condition
-    Node * cond = $4;
-
-    // update
-    Node * update = new Node("Update", "", yylineno);
-    Node * id = new Node("Identifier", "", yylineno);
-    id->children.push_back(new Node("", $6, yylineno));
-    update->children.push_back(id);
-    update->children.push_back($8);
-
-    // body
-    Node * body = $10;
-
-    $$->children.push_back(init);
-    $$->children.push_back(cond);
-    $$->children.push_back(update);
-    $$->children.push_back(body);
-  }
-  |
-  FOR LP COMMA math_expression COMMA ID ASSIGN math_expression RP block {
-    $$ = new Node("for_loop", "", yylineno);
-
-    // init (tom)
-    Node * init = new Node("Init", "", yylineno);
-    init->children.push_back(new Node("(Empty)", "", yylineno));
-
-    // condition
-    Node * cond = $4;
-
-    // update
-    Node * update = new Node("Update", "", yylineno);
-    Node * id = new Node("Identifier", "", yylineno);
-    id->children.push_back(new Node("", $6, yylineno));
-    update->children.push_back(id);
-    update->children.push_back($8);
-
-    // body
-    Node * body = $10;
-
-    $$->children.push_back(init);
-    $$->children.push_back(cond);
-    $$->children.push_back(update);
-    $$->children.push_back(body);
-  }
-  |
-  FOR LP ID ASSIGN math_expression COMMA condition relational_operators math_expression COMMA ID ASSIGN math_expression RP block {
-    $$ = new Node("for_loop", "", yylineno);
-
-    Node * variable = new Node("VarDecl", "", yylineno);
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $3, yylineno));
-    variable->children.push_back(identifier);
-    variable->children.push_back($5);
-
-
-    Node * logicalCondition = new Node("Logical_condition", "", yylineno);
-    Node * condition = $8;
-
-    condition->children.push_back($7);
-    condition->children.push_back($9);
-    logicalCondition->children.push_back(condition);
-
-
-    Node * variableTwo = new Node("Expression", "", yylineno);
-    variableTwo->children.push_back($13);
-
-
-
-    $$->children.push_back(variable);
-    $$->children.push_back(logicalCondition);
-    $$->children.push_back(variableTwo);
-    $$->children.push_back($15);
-  }
-  ;
-
-relational_operators:
-  EQTO {
-    $$ = new Node("", $1, yylineno);
-  }
-  |
-  NEQ {
-    $$ = new Node("", $1, yylineno);
-  }
-  |
-  LE {
-    $$ = new Node("", $1, yylineno);
-  }
-  |
-  GE {
-    $$ = new Node("", $1, yylineno);
-  }
-  |
-  LT {
-    $$ = new Node("", $1, yylineno);
-  }
-  |
-  GT {
-    $$ = new Node("", $1, yylineno);
-  }
-  ;
-
-  if_statement:
-    IF LP condition RP block {
-      $$ = new Node("If_statement", "", yylineno);
-      $$->children.push_back($3);
-      $$->children.push_back($5);
-    }
-    |
-    IF LP condition relational_operators condition RP block {
-      $$ = new Node("If_statement", "", yylineno);
-
-      Node * logicalCondition = new Node("Logical_condition", "", yylineno);
-      Node * condition = $4;
-
-      condition->children.push_back($3);
-      condition->children.push_back($5);
-      logicalCondition->children.push_back(condition);
-
-      $$->children.push_back(logicalCondition);
-      $$->children.push_back($7);
-      
-    }
-  ;
-
-
-  else_statement:
-    ELSE block {
-      $$ = new Node("Else_statement", "", yylineno);
-      $$->children.push_back($2);
-    }
-    |
-    ELSE variable {
-      $$ = new Node("Else", "", yylineno);
-      $$->children.push_back($2);
-    }
-    ;
-
-number_array:
-  primary {
-    Node * arrayLiteral = new Node("Array_literal", "", yylineno);
-    $$ = arrayLiteral;
-    $$->children.push_back($1);
-  }
-  | 
-  number_array COMMA primary {
+expr_stmt: 
+  expression {
     $$ = $1;
+  }
+  ;
+
+expression
+  : logical_or {
+    $$ = $1;
+  }
+  ;
+
+logical_or: 
+  logical_or OR logical_and {
+    $$ = new Node("", $2, yylineno);
+    $$->children.push_back($1);
     $$->children.push_back($3);
+  }
+  | logical_and {
+    $$ = $1;
+  }
+  ;
+
+logical_and:
+ logical_and AND equality {
+    $$ = new Node("", $2, yylineno);
+    $$->children.push_back($1);
+    $$->children.push_back($3);
+    
+  }
+  | equality {
+    $$ = $1;
+  }
+  ;
+
+equality:
+  equality EQTO relational {
+    $$ = new Node("Equal_to", "", yylineno);
+    $$->children.push_back($1);
+    $$->children.push_back($3);
+  }
+  | equality NEQ relational
+  | relational {
+    $$ = $1;
+  }
+  ;
+
+relational
+  : relational LT additive {
+    $$ = new Node("Less_than", "", yylineno);
+    $$->children.push_back($1);
+    $$->children.push_back($3);
+  }
+  | relational GT additive {
+    $$ = new Node("Greater_than", "", yylineno);
+    $$->children.push_back($1);
+    $$->children.push_back($3);
+  }
+  | relational LE additive {
+    $$ = new Node("Less_than_or_equal_to", "", yylineno);
+    $$->children.push_back($1);
+    $$->children.push_back($3);
+  }
+  | relational GE additive {
+    $$ = new Node("Greater_than_or_equal_to", "", yylineno);
+    $$->children.push_back($1);
+    $$->children.push_back($3);
+  }
+  | additive {
+    $$ = $1;
+  }
+  ;
+
+additive: 
+  additive PLUSOP multiplicative {
+    $$ = new Node("Add", "", yylineno); 
+    $$->children.push_back($1);
+    $$->children.push_back($3);
+  }
+  | additive MINUSOP multiplicative {
+    $$ = new Node("Minus", "", yylineno);
+    $$->children.push_back($1);
+    $$->children.push_back($3);
+
+  }
+  | multiplicative {
+    $$ = $1;
+  }
+  ;
+
+power:
+  unary POWER power {
+      $$ = new Node("Power", "", yylineno);
+      $$->children.push_back($1);
+      $$->children.push_back($3);
+  }
+| unary {
+      $$ = $1;
   }
 ;
 
-array_decl:
-  VOLATILE ID COLON type ASSIGN type SLB number_array SRB {
+multiplicative: 
+  multiplicative MULTOP unary {
+    $$ = new Node("Multiply", "", yylineno);
+    $$->children.push_back($1);
+    $$->children.push_back($3);
+  }
+  | multiplicative DIVOP unary {
+    $$ = new Node("Divide", "", yylineno);
+    $$->children.push_back($1);
+    $$->children.push_back($3);
+  }
+  | power {
+    $$ = $1;
+  }
+  ;
 
-    $$ = new Node("ArrayDecl", "", yylineno);
+unary:
+  EXCLAMATION_MARK unary
+    {
+      $$ = new Node("!", "", yylineno);
+      $$->children.push_back($2);
+    }
+  | primary
+    {
+      $$ = $1;
+    }
+  ;
 
-    Node * modifier = new Node("Modifier", "", yylineno);
-    modifier->children.push_back(new Node("Volatile", "", yylineno));
-
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $2, yylineno));    
-
-    $$->children.push_back(modifier);
-    $$->children.push_back(identifier);
-    $$->children.push_back($4);
-    $$->children.push_back($8);
+primary
+  : INT {
+    $$ = new Node("Integer", $1, yylineno);
+  }
+  | FLOAT {
+    $$ = new Node("float", $1, yylineno);
+  }
+  | TRUE {
+    $$ = new Node("Boolean", $1, yylineno);
+  }
+  | FALSE {
+    $$ = new Node("Boolean", $1, yylineno);
+  }
+  | ID {
+    $$ = new Node("Identifier", $1, yylineno);
+  }
+  | LP logical_or RP {
+    $$ = $2;
   }
   |
-  ID ASSIGN type SLB number_array SRB {
-    $$ = new Node("Assgin", "", yylineno);
-    $$->children.push_back(new Node("Id", "", yylineno));
-    Node * array = $3;
-    array->children.push_back($5);
-    $$->children.push_back(array);
+  array_call {
+    $$ = $1;
   }
   |
-  ID SLB math_expression SRB ASSIGN ID SLB math_expression SRB {
-    $$ = new Node("Re_assign", "", yylineno);
-    
-    Node * arrayOne = new Node("Array", "", yylineno);
-    Node * identifierOne = new Node("Identifier", "", yylineno);
-    Node * idOne = new Node("", $1, yylineno);
-    identifierOne->children.push_back(idOne);
-    Node * indexOne = new Node("index", "", yylineno);
-    indexOne->children.push_back($3);
+  func_call {
+    $$ = $1;
+  }
+  ;
 
-    arrayOne->children.push_back(identifierOne);
-    arrayOne->children.push_back(indexOne);
-
-
-    Node * arrayTwo = new Node("Array", "", yylineno);
-
-    Node * identifierTwo = new Node("Identifier", "", yylineno);
-    Node * idTwo = new Node("", $6, yylineno);
-    identifierTwo->children.push_back(idTwo);
-    Node * indexTwo = new Node("index", "", yylineno);
-    indexTwo->children.push_back($8);
-
-    arrayTwo->children.push_back(identifierTwo);
-    arrayTwo->children.push_back(indexTwo);
-
-    $$->children.push_back(arrayOne);
-    $$->children.push_back(arrayTwo);
+type:
+  INT_TYPE {
+    $$ = new Node("Type", $1, yylineno);
   }
   |
-  ID SLB math_expression SRB ASSIGN ID {
-    $$ = new Node("Re_assign", "", yylineno);
-    
-    Node * arrayOne = new Node("Array", "", yylineno);
-    Node * identifierOne = new Node("Identifier", "", yylineno);
-    Node * idOne = new Node("", $1, yylineno);
-    identifierOne->children.push_back(idOne);
-    Node * indexOne = new Node("index", "", yylineno);
-    indexOne->children.push_back($3);
-
-    arrayOne->children.push_back(identifierOne);
-    arrayOne->children.push_back(indexOne);
-
-
-    Node * identifierTwo = new Node("Identifier", "", yylineno);
-    Node * idTwo = new Node("", $6, yylineno);
-
-    identifierTwo->children.push_back(idTwo);
-
-    $$->children.push_back(arrayOne);
-    $$->children.push_back(identifierTwo);
-  }
-
-array_call:
-  ID SLB math_expression SRB {
-    $$ = new Node("Array", "", yylineno);
-    
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $1, yylineno));
-
-    Node * index = new Node("Index", "", yylineno);
-    index->children.push_back($3);
-
-    $$->children.push_back(identifier);
-    $$->children.push_back(index);
+  FLOAT_TYPE {
+    $$ = new Node("Type", $1, yylineno);
+  } 
+  | BOOLEAN_TYPE {
+    $$ = new Node("Type", $1, yylineno);
+  } 
+  | 
+  VOID_TYPE {
+    $$ = new Node("Type", $1, yylineno);
   }
   |
-  ID DOT LENGTH {
-    $$ = new Node("Array", "", yylineno);
-    Node * member_access = new Node("Member_access", "", yylineno);
-
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $1, yylineno));
-
-    member_access->children.push_back(identifier);
-    member_access->children.push_back(new Node("Length", "", yylineno));
-
-    $$->children.push_back(member_access);
+  FLOAT_ARRAY_TYPE {
+    $$ = new Node("Type", $1, yylineno);
+  }
+  |
+  INT_ARRAY_TYPE {
+    $$ = new Node("Type", $1, yylineno);
   }
   ;
 
 comment:
   COMMENT {
-    $$ = new Node("Comment", "", yylineno);
+    $$ = new Node("Comment", $1, yylineno);
   }
   ;
 
-class:
-  CLASS ID block {
-    $$ = new Node("Class", "", yylineno);
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $2, yylineno));
-    $$->children.push_back(identifier);
-    $$->children.push_back($3);
+
+values:
+  primary {
+    $$ = new Node("Array_literal", "", yylineno);
+    $$->children.push_back($1);
   }
   |
-  ID COLON ID ASSIGN ID LP RP {
-    $$ = new Node("VarDec", "", yylineno);
-
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $1, yylineno));
-
-    Node * type = new Node("Type", "", yylineno);
-    type->children.push_back(new Node("", $3, yylineno));
-
-    Node * classs = new Node("Class", "", yylineno);
-    classs->children.push_back(new Node("", $5, yylineno));
-
-    $$->children.push_back(identifier);
-    $$->children.push_back(type);
-    $$->children.push_back(classs);
-  
-  }
-  ;
-
-function_decl:
-  ID LP parameters RP COLON type block {
-    $$ = new Node("function_Decl", "", yylineno);
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $1, yylineno));
-
-    Node * returnType = new Node("Return_type", "", yylineno);
-    returnType->children.push_back($6);
-
-
-    $$->children.push_back(identifier);
-    $$->children.push_back($3);
-    $$->children.push_back(returnType);
-    $$->children.push_back($7);
-  }
-  |
-  ID LP RP COLON type block {
-    $$ = new Node("function_Decl", "", yylineno);
-    $$->children.push_back($5);
-    $$->children.push_back($6); 
-  }
-  ;
-
-function_call:
-  ID LP arguments RP {
-    $$ = new Node("function_call", "", yylineno);
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $1, yylineno));
-    $$->children.push_back(identifier);
-    $$->children.push_back($3);
-  }
-  |
-  ID LP RP {
-    $$ = new Node("function_call", "", yylineno);
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $1, yylineno));
-    $$->children.push_back(identifier);
-  }
-;
-
-parameters: 
-  ID COLON type {
-    $$ = new Node("parameters", "", yylineno);
-
-    Node * parameter = new Node("Parameter", "", yylineno);
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $1, yylineno));
-
-    parameter->children.push_back(identifier);
-    parameter->children.push_back($3);
-    $$->children.push_back(parameter);
-  }
-  |
-  parameters COMMA ID COLON type {
-
+  values COMMA primary {
     $$ = $1;
-
-    Node * parameter = new Node("Parameter", "", yylineno);
-    Node * identifier = new Node("Identifier", "", yylineno);
-    identifier->children.push_back(new Node("", $3, yylineno));
-
-    parameter->children.push_back(identifier);
-    parameter->children.push_back($5);
-    $$->children.push_back(parameter);
+    $$->children.push_back($3);
   }
-  ;
 
-  arguments:
-    math_expression {
-      $$ = new Node("Arguments", "", yylineno);
 
-      Node * argument = new Node("argument", "", yylineno);
-      argument->children.push_back($1);   
-      $$->children.push_back(argument);
-    }
-    |
-    arguments COMMA math_expression {
-      $$ = $1;
+array_call:
+  ID SLB expression SRB {
+    $$ = new Node("Array", "", yylineno);
+    $$->children.push_back(new Node("Identifier", $1, yylineno));
+    Node * index = new Node("Index", "", yylineno);
+    index->children.push_back($3);
 
-      Node * argument = new Node("argument", "", yylineno);
-      argument->children.push_back($3);   
-      $$->children.push_back(argument);
-    }
-    ;
-    
+    $$->children.push_back(index);
+  }
+  |
+  ID DOT LENGTH {
+    $$ = new Node("Array", "", yylineno);
+    Node * identifier = new Node("Identifier", $1, yylineno);
+    identifier->children.push_back(new Node("function_call", $3, yylineno));
+    $$->children.push_back(identifier);
+
+  }
+%%
+
+
 
 /* ./compiler < test_files/valid/test1.cpm */
 

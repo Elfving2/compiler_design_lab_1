@@ -1,5 +1,6 @@
-for ( , true , cont := cont ) {
-  j := j - 1
-  aux := number[j]
-  if (!(v < aux)) break
+main(): int {
+  volatile qs : QS := QS()
+  volatile r : int := qs.Start(10)
+  print(r)
+  return 0
 }
