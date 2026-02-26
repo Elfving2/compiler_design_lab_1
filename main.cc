@@ -2,6 +2,7 @@
 #include "parser.tab.hh"
 #include "Symbol_table.h"
 
+
 extern Node *root;
 extern FILE *yyin;
 extern int yylineno;
@@ -64,8 +65,9 @@ int main(int argc, char **argv)
 			{
 				//root->print_tree();
 				//root->generate_tree();
-				TreeTraversel tree;
-				tree.post_order(root);
+				Symbol_table table;
+				table.pre_order(root);
+
 				
 			}
 			catch (...)
