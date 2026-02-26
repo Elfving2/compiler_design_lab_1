@@ -1,5 +1,6 @@
 #include <iostream>
 #include "parser.tab.hh"
+#include "Symbol_table.h"
 
 extern Node *root;
 extern FILE *yyin;
@@ -61,14 +62,22 @@ int main(int argc, char **argv)
 			printf("\nPrint Tree:  \n");
 			try
 			{
-				root->print_tree();
-				root->generate_tree();
+				//root->print_tree();
+				//root->generate_tree();
+				TreeTraversel tree;
+				tree.post_order(root);
+				
 			}
 			catch (...)
 			{
 				errCode = errCodes::AST_ERROR;
 			}
 		}
+
+			// WE need to traverse through the tree
+			// create sybole table
+
+			// create semantic analys
 	}
 
 	return errCode;

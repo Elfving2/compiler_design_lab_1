@@ -1,6 +1,1 @@
-main(): int {
-  volatile qs : QS := QS()
-  volatile r : int := qs.Start(10)
-  print(r)
-  return 0
-}
+volitile result : int := 1 + 2 * 4
