@@ -1,0 +1,9 @@
+class A {
+    volatile correctScope : int := 10
+    correctScope = 35 
+}
+
+class B {
+    volatile correctScope : int := 10
+    correctScope := 35 
+}

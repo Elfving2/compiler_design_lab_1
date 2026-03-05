@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 			return 1;
 		}
 	}
-	//
+
 	if (USE_LEX_ONLY)
 		yylex();
 	else
@@ -63,12 +63,12 @@ int main(int argc, char **argv)
 			printf("\nPrint Tree:  \n");
 			try
 			{
-				//root->print_tree();
-				//root->generate_tree();
+				root->print_tree();
+				root->generate_tree();
 				Symbol_table table;
-				table.pre_order(root);
-
-				
+				table.traverse(root);
+				table.print();
+				table.print_errors();
 			}
 			catch (...)
 			{

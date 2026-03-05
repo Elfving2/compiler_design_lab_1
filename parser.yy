@@ -1,12 +1,14 @@
 /* Skeleton and definitions for generating a LALR(1) parser in C++ */
 %skeleton "lalr1.cc" 
 %glr-parser 
+
 /*
   Added grl-praser that fixes shift/reduce error in parser with ID LP RP and ID LP expression RP
   it dosent know if it should create a function or a math expression so i use glr-praser to look more
   one token ahead
 
 */
+
 %defines
 %define parse.error verbose
 %define api.value.type variant
@@ -83,7 +85,7 @@ block:
 
 statements:
   statement {
-    $$ = new Node("Block", "", yylineno);
+    $$ = new Node("Block", "Block", yylineno);
     $$->children.push_back($1);
   }
 | statements statement {
@@ -132,7 +134,7 @@ class_call:
 
 assignment:
   VOLATILE ID COLON type ASSIGN expression {
-    $$ = new Node("Assign", "", yylineno);
+    $$ = new Node("varDecl", "", yylineno);
     $$->children.push_back(new Node("Modifier", $1, yylineno));
     $$->children.push_back(new Node("Identifier", $2, yylineno));
     $$->children.push_back($4);
@@ -140,21 +142,21 @@ assignment:
   }
   |
   ID COLON type ASSIGN expression {
-    $$ = new Node("Assign", "", yylineno);
+    $$ = new Node("varDecl", "", yylineno);
     $$->children.push_back(new Node("Identifier", $1, yylineno));
     $$->children.push_back($3);
     $$->children.push_back($5);
   }
   |
   VOLATILE ID COLON type {
-    $$ = new Node("Decloration", "", yylineno);
+    $$ = new Node("varDecl", "", yylineno);
     $$->children.push_back(new Node("Modifier", $1, yylineno));
     $$->children.push_back(new Node("Identifier", $2, yylineno));
     $$->children.push_back($4);
   }
   | 
   VOLATILE ID COLON type ASSIGN type SLB values SRB {
-    $$ = new Node("Assign", "", yylineno);
+    $$ = new Node("varDecl", "", yylineno);
     $$->children.push_back(new Node("Modifier", $1, yylineno));
     $$->children.push_back(new Node("Identifier", $2, yylineno));
     $$->children.push_back($4);
@@ -176,7 +178,7 @@ assignment:
   }
   |
   VOLATILE ID COLON ID ASSIGN class_call {
-    $$ = new Node("Assign", "", yylineno);
+    $$ = new Node("varDecl", "", yylineno);
     $$->children.push_back(new Node("Modifier", $1, yylineno));
     $$->children.push_back(new Node("Identifier", $2, yylineno));
     $$->children.push_back(new Node("Class", $4, yylineno));
@@ -184,7 +186,7 @@ assignment:
   }
   |
   VOLATILE ID COLON type ASSIGN class_call DOT func_call {
-    $$ = new Node("Assign", "", yylineno);
+    $$ = new Node("varDecl", "", yylineno);
     $$->children.push_back(new Node("Modifier", $1, yylineno));
     $$->children.push_back(new Node("Identifier", $2, yylineno));
     $$->children.push_back($4);
@@ -194,7 +196,7 @@ assignment:
   }
   |
   VOLATILE ID COLON type ASSIGN ID DOT func_call {
-    $$ = new Node("Assign", "", yylineno);
+    $$ = new Node("varDecl", "", yylineno);
     $$->children.push_back(new Node("Modifier", $1, yylineno));
     $$->children.push_back(new Node("Identifier", $2, yylineno));
     $$->children.push_back($4);
@@ -299,8 +301,6 @@ func_call:
     $$->children.push_back($3);
   }
   ;
-
-
 
 
 if_body
@@ -535,19 +535,19 @@ unary:
 
 primary
   : INT {
-    $$ = new Node("Integer", $1, yylineno);
+    $$ = new Node("Value", $1, yylineno);
   }
   | FLOAT {
-    $$ = new Node("float", $1, yylineno);
+    $$ = new Node("Value", $1, yylineno);
   }
   | TRUE {
-    $$ = new Node("Boolean", $1, yylineno);
+    $$ = new Node("Value", $1, yylineno);
   }
   | FALSE {
-    $$ = new Node("Boolean", $1, yylineno);
+    $$ = new Node("Value", $1, yylineno);
   }
   | ID {
-    $$ = new Node("Identifier", $1, yylineno);
+    $$ = new Node("Value", $1, yylineno);
   }
   | LP logical_or RP {
     $$ = $2;

@@ -1,5 +1,5 @@
 main(): int {
-  volatile list: float[] := float[5.0, 6.0, 1.0, 2.4, 2.3, 2.5, 9.0, 14.0, 2.0, 15.0, 6.0, 7.0, 8.0, 97.0]
+  volatile  list: float[] := float[5.0, 6.0, 1.0, 2.4, 2.3, 2.5, 9.0, 14.0, 2.0, 15.0, 6.0, 7.0, 8.0, 97.0]
   volatile n : int := list.length
 
   volatile pass : int := 0

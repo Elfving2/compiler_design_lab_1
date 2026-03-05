@@ -1,2 +1,0 @@
-volatile result : float := ( (2 ^ (4 * 2) + 10 - 2 * 6 + 1.0 / 4.0) * 2 )
-volatile result2 : float := ( (2 ^ (4 * 2) + 10 - 2 * 6 + 1.0 / 4.0) * 2 )

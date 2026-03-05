@@ -1,0 +1,10 @@
+class A {
+  volatile result : float := 2.5
+    Sort(left : int, right : int): int { 
+      volatile result : float := 2
+      volatile result : float := 3
+      Calc(): void {
+        volatile test : int := result
+      }
+    }
+}

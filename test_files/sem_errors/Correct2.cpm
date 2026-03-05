@@ -1,0 +1,4 @@
+main(): int {
+	volatile x : float := 2.5
+	volatile y : float := 3.5
+}
