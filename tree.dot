@@ -1,227 +1,83 @@
 digraph {
-n0 [label="Block:"];
-n1 [label="Class:OP"];
-n2 [label="Block:"];
-n3 [label="function_def:"];
-n4 [label="Identifier:arithmetic"];
+n0 [label="Block:Block"];
+n1 [label="Main:int"];
+n2 [label="Block:Block"];
+n3 [label="varDecl:"];
+n4 [label="Modifier:volatile"];
 n3 -> n4
-n5 [label="Return_type:"];
-n6 [label="Type:int"];
-n5 -> n6
+n5 [label="Identifier:n"];
 n3 -> n5
-n7 [label="Block:"];
-n8 [label="Assign:"];
-n9 [label="Modifier:volatile"];
-n8 -> n9
-n10 [label="Identifier:b"];
-n8 -> n10
-n11 [label="Type:int"];
-n8 -> n11
-n12 [label="Integer:4"];
-n8 -> n12
-n7 -> n8
-n13 [label="Assign:"];
-n14 [label="Modifier:volatile"];
-n13 -> n14
-n15 [label="Identifier:c"];
-n13 -> n15
-n16 [label="Type:int"];
-n13 -> n16
-n17 [label="Integer:8"];
-n13 -> n17
-n7 -> n13
-n18 [label="Decloration:"];
-n19 [label="Modifier:volatile"];
-n18 -> n19
-n20 [label="Identifier:ret"];
-n18 -> n20
-n21 [label="Type:int"];
-n18 -> n21
-n7 -> n18
-n22 [label="Comment:// The following statements should generate the same tree"];
-n7 -> n22
-n23 [label="Assign:"];
-n24 [label="Identifier:ret"];
-n23 -> n24
-n25 [label="Add:"];
-n26 [label="Minus:"];
-n27 [label="Add:"];
-n28 [label="Integer:1"];
-n27 -> n28
-n29 [label="Multiply:"];
-n30 [label="Integer:18"];
-n29 -> n30
-n31 [label="Integer:3"];
-n29 -> n31
-n27 -> n29
-n26 -> n27
-n32 [label="Identifier:b"];
-n26 -> n32
-n25 -> n26
-n33 [label="Multiply:"];
-n34 [label="Identifier:c"];
-n33 -> n34
-n35 [label="Integer:9"];
-n33 -> n35
-n25 -> n33
-n23 -> n25
-n7 -> n23
-n36 [label="Assign:"];
-n37 [label="Identifier:ret"];
-n36 -> n37
-n38 [label="Add:"];
-n39 [label="Minus:"];
-n40 [label="Add:"];
-n41 [label="Integer:1"];
-n40 -> n41
-n42 [label="Multiply:"];
-n43 [label="Integer:18"];
-n42 -> n43
-n44 [label="Integer:3"];
-n42 -> n44
-n40 -> n42
-n39 -> n40
-n45 [label="Identifier:b"];
-n39 -> n45
-n38 -> n39
-n46 [label="Multiply:"];
-n47 [label="Identifier:c"];
-n46 -> n47
-n48 [label="Integer:9"];
-n46 -> n48
-n38 -> n46
-n36 -> n38
-n7 -> n36
-n49 [label="Return:"];
-n50 [label="Identifier:ret"];
-n49 -> n50
-n7 -> n49
-n3 -> n7
+n6 [label="Type:int"];
+n3 -> n6
 n2 -> n3
-n51 [label="function_def:"];
-n52 [label="Identifier:relational"];
-n51 -> n52
-n53 [label="Return_type:"];
-n54 [label="Type:boolean"];
-n53 -> n54
-n51 -> n53
-n55 [label="Block:"];
-n56 [label="Assign:"];
-n57 [label="Identifier:a"];
-n56 -> n57
-n58 [label="Type:int"];
-n56 -> n58
-n59 [label="Integer:10"];
-n56 -> n59
-n55 -> n56
-n60 [label="Assign:"];
-n61 [label="Identifier:b"];
-n60 -> n61
-n62 [label="Type:int"];
-n60 -> n62
-n63 [label="Integer:12"];
-n60 -> n63
-n55 -> n60
-n64 [label="Assign:"];
-n65 [label="Identifier:c"];
-n64 -> n65
-n66 [label="Type:boolean"];
-n64 -> n66
-n67 [label="Boolean:true"];
-n64 -> n67
-n55 -> n64
-n68 [label="Assign:"];
-n69 [label="Identifier:d"];
-n68 -> n69
-n70 [label="Type:boolean"];
-n68 -> n70
-n71 [label="Boolean:false"];
-n68 -> n71
-n55 -> n68
-n72 [label="Decloration:"];
-n73 [label="Modifier:volatile"];
-n72 -> n73
-n74 [label="Identifier:ret"];
-n72 -> n74
-n75 [label="Type:boolean"];
-n72 -> n75
-n55 -> n72
-n76 [label="Comment:// The following statements should generate the same tree"];
-n55 -> n76
-n77 [label="Assign:"];
-n78 [label="Identifier:ret"];
-n77 -> n78
-n79 [label=":|"];
-n80 [label=":&"];
-n81 [label="Less_than:"];
-n82 [label="Identifier:a"];
-n81 -> n82
-n83 [label="Identifier:b"];
-n81 -> n83
-n80 -> n81
-n84 [label="!:"];
-n85 [label="Identifier:d"];
-n84 -> n85
-n80 -> n84
-n79 -> n80
-n86 [label="Equal_to:"];
-n87 [label="Identifier:d"];
-n86 -> n87
-n88 [label="!:"];
-n89 [label="Identifier:c"];
-n88 -> n89
-n86 -> n88
-n79 -> n86
-n77 -> n79
-n55 -> n77
-n90 [label="Assign:"];
-n91 [label="Identifier:ret"];
-n90 -> n91
-n92 [label=":|"];
-n93 [label=":&"];
-n94 [label="Less_than:"];
-n95 [label="Identifier:a"];
-n94 -> n95
-n96 [label="Identifier:b"];
-n94 -> n96
-n93 -> n94
-n97 [label="!:"];
-n98 [label="Identifier:d"];
-n97 -> n98
-n93 -> n97
-n92 -> n93
-n99 [label="Equal_to:"];
-n100 [label="Identifier:d"];
-n99 -> n100
-n101 [label="!:"];
-n102 [label="Identifier:c"];
-n101 -> n102
-n99 -> n101
-n92 -> n99
-n90 -> n92
-n55 -> n90
-n103 [label="Return:"];
-n104 [label="Identifier:ret"];
-n103 -> n104
-n55 -> n103
-n51 -> n55
-n2 -> n51
+n7 [label="Read:"];
+n8 [label="Value:n"];
+n7 -> n8
+n2 -> n7
+n9 [label="varDecl:"];
+n10 [label="Modifier:volatile"];
+n9 -> n10
+n11 [label="Identifier:x"];
+n9 -> n11
+n12 [label="Type:int"];
+n9 -> n12
+n13 [label="Value:1"];
+n9 -> n13
+n2 -> n9
+n14 [label="varDecl:"];
+n15 [label="Modifier:volatile"];
+n14 -> n15
+n16 [label="Identifier:i"];
+n14 -> n16
+n17 [label="Type:int"];
+n14 -> n17
+n18 [label="Value:2"];
+n14 -> n18
+n2 -> n14
+n19 [label="For_loop:"];
+n20 [label="Assign:1"];
+n21 [label="Identifier:i"];
+n20 -> n21
+n22 [label="Value:2"];
+n20 -> n22
+n19 -> n20
+n23 [label="Less_than_or_equal_to:"];
+n24 [label="Value:i"];
+n23 -> n24
+n25 [label="Value:n"];
+n23 -> n25
+n19 -> n23
+n26 [label="Assign:2"];
+n27 [label="Identifier:i"];
+n26 -> n27
+n28 [label="Add:"];
+n29 [label="Value:i"];
+n28 -> n29
+n30 [label="Value:1"];
+n28 -> n30
+n26 -> n28
+n19 -> n26
+n31 [label="Block:Block"];
+n32 [label="Assign:"];
+n33 [label="Identifier:x"];
+n32 -> n33
+n34 [label="Multiply:"];
+n35 [label="Value:x"];
+n34 -> n35
+n36 [label="Value:i"];
+n34 -> n36
+n32 -> n34
+n31 -> n32
+n19 -> n31
+n2 -> n19
+n37 [label="Print:"];
+n38 [label="Value:x"];
+n37 -> n38
+n2 -> n37
+n39 [label="Return:"];
+n40 [label="Value:0"];
+n39 -> n40
+n2 -> n39
 n1 -> n2
 n0 -> n1
-n105 [label="Main:int"];
-n106 [label="Block:"];
-n107 [label="Print:"];
-n108 [label="Class:OP"];
-n109 [label="function_call:arithmetic"];
-n110 [label=":"];
-n109 -> n110
-n108 -> n109
-n107 -> n108
-n106 -> n107
-n111 [label="Return:"];
-n112 [label="Integer:0"];
-n111 -> n112
-n106 -> n111
-n105 -> n106
-n0 -> n105
 }

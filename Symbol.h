@@ -41,7 +41,6 @@ struct Class_symbol : Symbol {
 
 struct Variable_symbol : Symbol {
     bool isVolatile = false;
-    //list<string> value;
     string value;
     void print() override {
         if (isVolatile) {
@@ -57,15 +56,12 @@ struct Variable_symbol : Symbol {
 
 };
 
-
 struct Assign_symbol : Symbol {
     string value;
     void print() override{
         cout << Symbol::identifier << " : " << value << endl;
     }
 };
-
-
 
 struct Method_symbol : Symbol {
     vector<string> parameters;
@@ -81,6 +77,49 @@ struct Method_symbol : Symbol {
     }
 };
 
+struct Print_symbol : Symbol {
+    string value;
+
+    void print() override {
+        cout << "print"<< "(" << value << ")" << endl;
+    }
+
+};
+
+struct Return_symbol : Symbol {
+    string value;
+
+    void print() override {
+        cout << "return" << " " << value << endl;
+    }
+};
+
+struct Main_symbol : Symbol {
+
+    void print() override {
+        cout << "Main" << ":" << Symbol::type << endl;
+    }
+};
+
+struct Read_symbol : Symbol {
+    string value;
+
+    void print() override {
+        cout << "read"<< "(" << value << ")" << endl;
+    }
+
+};
+
+struct For_symbol : Symbol {
+    string part1;
+    string part2;
+    string part3;
+
+    void print() override {
+        cout << "for"<< "(" << part1 << ","  << part2 << "," << part3 << ")" << endl;
+    }
+
+};
 
 
 #endif

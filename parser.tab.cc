@@ -42,7 +42,7 @@
 
 
 // Unqualified %code blocks.
-#line 23 "parser.yy"
+#line 25 "parser.yy"
 
   #define YY_DECL yy::parser::symbol_type yylex()
   YY_DECL;
@@ -947,7 +947,7 @@ namespace yy {
           switch (yyn)
             {
   case 2: // root: statements "end of file"
-#line 70 "parser.yy"
+#line 72 "parser.yy"
   {
     root = yystack_[1].value.as < Node * > ();
   }
@@ -955,7 +955,7 @@ namespace yy {
     break;
 
   case 3: // root: block "end of file"
-#line 73 "parser.yy"
+#line 75 "parser.yy"
               {
     root = yystack_[1].value.as < Node * > ();
   }
@@ -963,7 +963,7 @@ namespace yy {
     break;
 
   case 4: // block: LCB statements RCB
-#line 79 "parser.yy"
+#line 81 "parser.yy"
                      {
     yylhs.value.as < Node * > () = yystack_[1].value.as < Node * > ();
   }
@@ -971,16 +971,16 @@ namespace yy {
     break;
 
   case 5: // statements: statement
-#line 85 "parser.yy"
+#line 87 "parser.yy"
             {
-    yylhs.value.as < Node * > () = new Node("Block", "", yylineno);
+    yylhs.value.as < Node * > () = new Node("Block", "Block", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ());
   }
 #line 980 "parser.tab.cc"
     break;
 
   case 6: // statements: statements statement
-#line 89 "parser.yy"
+#line 91 "parser.yy"
                        {
   yylhs.value.as < Node * > () = yystack_[1].value.as < Node * > ();
   yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ());
@@ -989,91 +989,91 @@ namespace yy {
     break;
 
   case 7: // statement: main_def
-#line 96 "parser.yy"
+#line 98 "parser.yy"
   { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 995 "parser.tab.cc"
     break;
 
   case 8: // statement: class_def
-#line 97 "parser.yy"
+#line 99 "parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1001 "parser.tab.cc"
     break;
 
   case 9: // statement: func_def
-#line 98 "parser.yy"
+#line 100 "parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1007 "parser.tab.cc"
     break;
 
   case 10: // statement: assignment
-#line 99 "parser.yy"
+#line 101 "parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1013 "parser.tab.cc"
     break;
 
   case 11: // statement: if_stmt
-#line 100 "parser.yy"
+#line 102 "parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1019 "parser.tab.cc"
     break;
 
   case 12: // statement: for_stmt
-#line 101 "parser.yy"
+#line 103 "parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1025 "parser.tab.cc"
     break;
 
   case 13: // statement: print_stmt
-#line 102 "parser.yy"
+#line 104 "parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1031 "parser.tab.cc"
     break;
 
   case 14: // statement: read_stmt
-#line 103 "parser.yy"
+#line 105 "parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1037 "parser.tab.cc"
     break;
 
   case 15: // statement: return_stmt
-#line 104 "parser.yy"
+#line 106 "parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1043 "parser.tab.cc"
     break;
 
   case 16: // statement: break_stmt
-#line 105 "parser.yy"
+#line 107 "parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1049 "parser.tab.cc"
     break;
 
   case 17: // statement: continue_stmt
-#line 106 "parser.yy"
+#line 108 "parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1055 "parser.tab.cc"
     break;
 
   case 18: // statement: expr_stmt
-#line 107 "parser.yy"
+#line 109 "parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1061 "parser.tab.cc"
     break;
 
   case 19: // statement: type
-#line 108 "parser.yy"
+#line 110 "parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1067 "parser.tab.cc"
     break;
 
   case 20: // statement: comment
-#line 109 "parser.yy"
+#line 111 "parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1073 "parser.tab.cc"
     break;
 
   case 21: // main_def: MAIN LP RP COLON INT_TYPE block
-#line 114 "parser.yy"
+#line 116 "parser.yy"
                                   {
     yylhs.value.as < Node * > () = new Node("Main", yystack_[1].value.as < std::string > (), yylineno);
     yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ());
@@ -1082,7 +1082,7 @@ namespace yy {
     break;
 
   case 22: // class_def: CLASS ID block
-#line 121 "parser.yy"
+#line 123 "parser.yy"
                  {
     yylhs.value.as < Node * > () = new Node("Class", yystack_[1].value.as < std::string > (), yylineno);
     yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ());
@@ -1091,7 +1091,7 @@ namespace yy {
     break;
 
   case 23: // class_call: ID LP RP
-#line 128 "parser.yy"
+#line 130 "parser.yy"
            {
     yylhs.value.as < Node * > () = new Node("Class", yystack_[2].value.as < std::string > (), yylineno);
   }
@@ -1099,9 +1099,9 @@ namespace yy {
     break;
 
   case 24: // assignment: VOLATILE ID COLON type ASSIGN expression
-#line 134 "parser.yy"
+#line 136 "parser.yy"
                                            {
-    yylhs.value.as < Node * > () = new Node("Assign", "", yylineno);
+    yylhs.value.as < Node * > () = new Node("varDecl", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(new Node("Modifier", yystack_[5].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[4].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(yystack_[2].value.as < Node * > ());
@@ -1111,9 +1111,9 @@ namespace yy {
     break;
 
   case 25: // assignment: ID COLON type ASSIGN expression
-#line 142 "parser.yy"
+#line 144 "parser.yy"
                                   {
-    yylhs.value.as < Node * > () = new Node("Assign", "", yylineno);
+    yylhs.value.as < Node * > () = new Node("varDecl", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[4].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(yystack_[2].value.as < Node * > ());
     yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ());
@@ -1122,9 +1122,9 @@ namespace yy {
     break;
 
   case 26: // assignment: VOLATILE ID COLON type
-#line 149 "parser.yy"
+#line 151 "parser.yy"
                          {
-    yylhs.value.as < Node * > () = new Node("Decloration", "", yylineno);
+    yylhs.value.as < Node * > () = new Node("varDecl", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(new Node("Modifier", yystack_[3].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[2].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ());
@@ -1133,9 +1133,9 @@ namespace yy {
     break;
 
   case 27: // assignment: VOLATILE ID COLON type ASSIGN type SLB values SRB
-#line 156 "parser.yy"
+#line 158 "parser.yy"
                                                     {
-    yylhs.value.as < Node * > () = new Node("Assign", "", yylineno);
+    yylhs.value.as < Node * > () = new Node("varDecl", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(new Node("Modifier", yystack_[8].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[7].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(yystack_[5].value.as < Node * > ());
@@ -1145,7 +1145,7 @@ namespace yy {
     break;
 
   case 28: // assignment: array_call ASSIGN array_call
-#line 164 "parser.yy"
+#line 166 "parser.yy"
                                {
     yylhs.value.as < Node * > () = new Node("Assign", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(yystack_[2].value.as < Node * > ());
@@ -1155,7 +1155,7 @@ namespace yy {
     break;
 
   case 29: // assignment: ID COLON ID ASSIGN class_call
-#line 170 "parser.yy"
+#line 172 "parser.yy"
                                 {
     yylhs.value.as < Node * > () = new Node("Assign", "", yylineno);
 
@@ -1167,9 +1167,9 @@ namespace yy {
     break;
 
   case 30: // assignment: VOLATILE ID COLON ID ASSIGN class_call
-#line 178 "parser.yy"
+#line 180 "parser.yy"
                                          {
-    yylhs.value.as < Node * > () = new Node("Assign", "", yylineno);
+    yylhs.value.as < Node * > () = new Node("varDecl", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(new Node("Modifier", yystack_[5].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[4].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(new Node("Class", yystack_[2].value.as < std::string > (), yylineno));
@@ -1179,9 +1179,9 @@ namespace yy {
     break;
 
   case 31: // assignment: VOLATILE ID COLON type ASSIGN class_call DOT func_call
-#line 186 "parser.yy"
+#line 188 "parser.yy"
                                                          {
-    yylhs.value.as < Node * > () = new Node("Assign", "", yylineno);
+    yylhs.value.as < Node * > () = new Node("varDecl", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(new Node("Modifier", yystack_[7].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[6].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(yystack_[4].value.as < Node * > ());
@@ -1193,9 +1193,9 @@ namespace yy {
     break;
 
   case 32: // assignment: VOLATILE ID COLON type ASSIGN ID DOT func_call
-#line 196 "parser.yy"
+#line 198 "parser.yy"
                                                  {
-    yylhs.value.as < Node * > () = new Node("Assign", "", yylineno);
+    yylhs.value.as < Node * > () = new Node("varDecl", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(new Node("Modifier", yystack_[7].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[6].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(yystack_[4].value.as < Node * > ());
@@ -1207,7 +1207,7 @@ namespace yy {
     break;
 
   case 33: // assignment: ID ASSIGN expression
-#line 206 "parser.yy"
+#line 208 "parser.yy"
                        {
     yylhs.value.as < Node * > () = new Node("Assign", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[2].value.as < std::string > (), yylineno));
@@ -1217,7 +1217,7 @@ namespace yy {
     break;
 
   case 34: // assignment: array_call ASSIGN ID
-#line 212 "parser.yy"
+#line 214 "parser.yy"
                        {
     yylhs.value.as < Node * > () = new Node("Assaign", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(yystack_[2].value.as < Node * > ());
@@ -1227,7 +1227,7 @@ namespace yy {
     break;
 
   case 35: // assignment: ID ASSIGN type SLB values SRB
-#line 218 "parser.yy"
+#line 220 "parser.yy"
                                 {
     yylhs.value.as < Node * > () = new Node("Assaign", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[5].value.as < std::string > (), yylineno));
@@ -1240,7 +1240,7 @@ namespace yy {
     break;
 
   case 36: // assignment: ID DOT func_call
-#line 227 "parser.yy"
+#line 229 "parser.yy"
                    {
     yylhs.value.as < Node * > () = new Node("Identifier", yystack_[2].value.as < std::string > (), yylineno);
     yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ());
@@ -1249,7 +1249,7 @@ namespace yy {
     break;
 
   case 37: // parameters: ID COLON type
-#line 235 "parser.yy"
+#line 237 "parser.yy"
                 {
     yylhs.value.as < Node * > () = new Node("Parameters", "", yylineno);
     Node * parameter = new Node("Parameter", "", yylineno);
@@ -1261,7 +1261,7 @@ namespace yy {
     break;
 
   case 38: // parameters: parameters COMMA ID COLON type
-#line 243 "parser.yy"
+#line 245 "parser.yy"
                                   {
     yylhs.value.as < Node * > () = yystack_[4].value.as < Node * > ();
     Node * parameter = new Node("Parameter", "", yylineno);
@@ -1273,7 +1273,7 @@ namespace yy {
     break;
 
   case 39: // func_def: ID LP parameters RP COLON type block
-#line 252 "parser.yy"
+#line 254 "parser.yy"
                                        {
     yylhs.value.as < Node * > () = new Node("function_def", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[6].value.as < std::string > (), yylineno));
@@ -1287,7 +1287,7 @@ namespace yy {
     break;
 
   case 40: // func_def: ID LP RP COLON type block
-#line 262 "parser.yy"
+#line 264 "parser.yy"
                             {
     yylhs.value.as < Node * > () = new Node("function_def", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[5].value.as < std::string > (), yylineno));
@@ -1300,7 +1300,7 @@ namespace yy {
     break;
 
   case 41: // func_def: ID COLON type LP RP block
-#line 271 "parser.yy"
+#line 273 "parser.yy"
                             {
     yylhs.value.as < Node * > () = new Node("function_def", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[5].value.as < std::string > (), yylineno));
@@ -1313,7 +1313,7 @@ namespace yy {
     break;
 
   case 42: // arguments: %empty
-#line 282 "parser.yy"
+#line 284 "parser.yy"
         { 
     yylhs.value.as < Node * > () = new Node("","", yylineno);
   }
@@ -1321,7 +1321,7 @@ namespace yy {
     break;
 
   case 43: // arguments: expression
-#line 286 "parser.yy"
+#line 288 "parser.yy"
              {
     yylhs.value.as < Node * > () = new Node("Arguments", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ());
@@ -1330,7 +1330,7 @@ namespace yy {
     break;
 
   case 44: // arguments: arguments COMMA expression
-#line 291 "parser.yy"
+#line 293 "parser.yy"
                              {
     yylhs.value.as < Node * > () = yystack_[2].value.as < Node * > ();
     yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ());
@@ -1339,7 +1339,7 @@ namespace yy {
     break;
 
   case 45: // func_call: ID LP arguments RP
-#line 297 "parser.yy"
+#line 299 "parser.yy"
                      {
     yylhs.value.as < Node * > () = new Node("function_call", yystack_[3].value.as < std::string > (), yylineno);
     yylhs.value.as < Node * > ()->children.push_back(yystack_[1].value.as < Node * > ());
@@ -1390,13 +1390,13 @@ namespace yy {
 #line 336 "parser.yy"
                                                                                    {
     yylhs.value.as < Node * > () = new Node("For_loop", "", yylineno);
-    Node * assign = new Node("Assign", "", yylineno);
+    Node * assign = new Node("Assign", "1", yylineno);
     assign->children.push_back(new Node("Identifier", yystack_[10].value.as < std::string > (), yylineno));
     assign->children.push_back(yystack_[8].value.as < Node * > ());
     yylhs.value.as < Node * > ()->children.push_back(assign);
     yylhs.value.as < Node * > ()->children.push_back(yystack_[6].value.as < Node * > ());
     
-    Node * assign2 = new Node("Assign", "", yylineno);
+    Node * assign2 = new Node("Assign", "2", yylineno);
     assign2->children.push_back(new Node("Identifier", yystack_[4].value.as < std::string > (), yylineno));
     assign2->children.push_back(yystack_[2].value.as < Node * > ());
     yylhs.value.as < Node * > ()->children.push_back(assign2);
@@ -1410,7 +1410,7 @@ namespace yy {
                                                              {
     yylhs.value.as < Node * > () = new Node("For_loop", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(yystack_[6].value.as < Node * > ());
-    Node * assign = new Node("Assign", "", yylineno);
+    Node * assign = new Node("Assign", "2", yylineno);
     assign->children.push_back(yystack_[4].value.as < Node * > ());
     assign->children.push_back(yystack_[2].value.as < Node * > ());
     yylhs.value.as < Node * > ()->children.push_back(assign);
@@ -1702,7 +1702,7 @@ namespace yy {
   case 83: // primary: INT
 #line 537 "parser.yy"
         {
-    yylhs.value.as < Node * > () = new Node("Integer", yystack_[0].value.as < std::string > (), yylineno);
+    yylhs.value.as < Node * > () = new Node("Value", yystack_[0].value.as < std::string > (), yylineno);
   }
 #line 1708 "parser.tab.cc"
     break;
@@ -1710,7 +1710,7 @@ namespace yy {
   case 84: // primary: FLOAT
 #line 540 "parser.yy"
           {
-    yylhs.value.as < Node * > () = new Node("float", yystack_[0].value.as < std::string > (), yylineno);
+    yylhs.value.as < Node * > () = new Node("Value", yystack_[0].value.as < std::string > (), yylineno);
   }
 #line 1716 "parser.tab.cc"
     break;
@@ -1718,7 +1718,7 @@ namespace yy {
   case 85: // primary: TRUE
 #line 543 "parser.yy"
          {
-    yylhs.value.as < Node * > () = new Node("Boolean", yystack_[0].value.as < std::string > (), yylineno);
+    yylhs.value.as < Node * > () = new Node("Value", yystack_[0].value.as < std::string > (), yylineno);
   }
 #line 1724 "parser.tab.cc"
     break;
@@ -1726,7 +1726,7 @@ namespace yy {
   case 86: // primary: FALSE
 #line 546 "parser.yy"
           {
-    yylhs.value.as < Node * > () = new Node("Boolean", yystack_[0].value.as < std::string > (), yylineno);
+    yylhs.value.as < Node * > () = new Node("Value", yystack_[0].value.as < std::string > (), yylineno);
   }
 #line 1732 "parser.tab.cc"
     break;
@@ -1734,7 +1734,7 @@ namespace yy {
   case 87: // primary: ID
 #line 549 "parser.yy"
        {
-    yylhs.value.as < Node * > () = new Node("Identifier", yystack_[0].value.as < std::string > (), yylineno);
+    yylhs.value.as < Node * > () = new Node("Value", yystack_[0].value.as < std::string > (), yylineno);
   }
 #line 1740 "parser.tab.cc"
     break;
@@ -2457,11 +2457,11 @@ namespace yy {
   const short
   parser::yyrline_[] =
   {
-       0,    69,    69,    73,    79,    85,    89,    96,    97,    98,
-      99,   100,   101,   102,   103,   104,   105,   106,   107,   108,
-     109,   114,   121,   128,   134,   142,   149,   156,   164,   170,
-     178,   186,   196,   206,   212,   218,   227,   235,   243,   252,
-     262,   271,   282,   286,   291,   297,   307,   312,   316,   322,
+       0,    71,    71,    75,    81,    87,    91,    98,    99,   100,
+     101,   102,   103,   104,   105,   106,   107,   108,   109,   110,
+     111,   116,   123,   130,   136,   144,   151,   158,   166,   172,
+     180,   188,   198,   208,   214,   220,   229,   237,   245,   254,
+     264,   273,   284,   288,   293,   299,   307,   312,   316,   322,
      336,   351,   363,   370,   375,   384,   391,   398,   404,   408,
      414,   420,   425,   431,   437,   443,   448,   449,   455,   460,
      465,   470,   475,   481,   486,   492,   498,   503,   509,   514,

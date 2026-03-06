@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 				root->print_tree();
 				root->generate_tree();
 				Symbol_table table;
-				table.traverse(root);
+				table.execute(root);
 				table.print();
 				table.print_errors();
 			}

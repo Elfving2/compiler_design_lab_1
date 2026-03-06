@@ -4,6 +4,7 @@
 #include "Symbol.h"
 #include <vector>
 #include <unordered_map>
+#include <sstream>
 using namespace std;
 
 class Symbol_table {
@@ -11,6 +12,19 @@ class Symbol_table {
         Scope* global_scope;
         Scope* current_scope;
         list<string> errors;
+        Symbol * Class_s(Symbol * &symPtr, Node * root);
+        Symbol * Method_s(Symbol * &symPtr, Node * root);
+        Symbol * Variable_s(Symbol * &symPtr, Node * root);
+        Symbol * Assign_s(Symbol * &symPtr, Node * root);
+        Symbol * Return_s(Symbol * &symPtr, Node * root);
+        Symbol * Print_s(Symbol * &symPtr, Node * root);
+        Symbol * Main_s(Symbol * &symPtr, Node * root);
+        Symbol * Read_s(Symbol * &symPtr, Node * root);
+        Symbol * For_s(Symbol * &symPtr, Node * root);
+        string build_expr(Node* node, int parentPrec);
+        int precedence(const string& type);
+
+
     public:
         Scope * get_global_scope();
         Symbol_table();

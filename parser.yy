@@ -335,13 +335,13 @@ if_stmt:
 for_stmt: 
   FOR LP ID ASSIGN expression COMMA relational COMMA ID ASSIGN expression RP block {
     $$ = new Node("For_loop", "", yylineno);
-    Node * assign = new Node("Assign", "", yylineno);
+    Node * assign = new Node("Assign", "1", yylineno);
     assign->children.push_back(new Node("Identifier", $3, yylineno));
     assign->children.push_back($5);
     $$->children.push_back(assign);
     $$->children.push_back($7);
     
-    Node * assign2 = new Node("Assign", "", yylineno);
+    Node * assign2 = new Node("Assign", "2", yylineno);
     assign2->children.push_back(new Node("Identifier", $9, yylineno));
     assign2->children.push_back($11);
     $$->children.push_back(assign2);
@@ -351,7 +351,7 @@ for_stmt:
   FOR LP COMMA primary COMMA primary ASSIGN primary RP block {
     $$ = new Node("For_loop", "", yylineno);
     $$->children.push_back($4);
-    Node * assign = new Node("Assign", "", yylineno);
+    Node * assign = new Node("Assign", "2", yylineno);
     assign->children.push_back($6);
     assign->children.push_back($8);
     $$->children.push_back(assign);
