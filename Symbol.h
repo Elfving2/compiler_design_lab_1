@@ -58,8 +58,9 @@ struct Variable_symbol : Symbol {
 
 struct Assign_symbol : Symbol {
     string value;
+    string index;
     void print() override{
-        cout << Symbol::identifier << " : " << value << endl;
+        cout << Symbol::identifier << index << " : " << value << endl;
     }
 };
 
@@ -116,10 +117,26 @@ struct For_symbol : Symbol {
     string part3;
 
     void print() override {
-        cout << "for"<< "(" << part1 << ","  << part2 << "," << part3 << ")" << endl;
+        cout << "for"<< "(" << part1 << ", "  << part2 << ", " << part3 << ")" << endl;
     }
 
 };
 
+struct If_symbol : Symbol {
+    string part1;
+    string op;
+    string part2;
+    void print() override {
+        cout << "if(" << part1 << op << part2 <<")" << endl;
+    }
+
+};
+
+struct Comment_symbol : Symbol {
+    void print() override {
+        cout << "Comment : " << Symbol::identifier << endl;
+    }
+
+};
 
 #endif

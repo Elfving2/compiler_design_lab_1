@@ -164,6 +164,8 @@ assignment:
   }
   |
   array_call ASSIGN array_call {
+    $1->value = "1";
+    $3->value = "2";
     $$ = new Node("Assign", "", yylineno);
     $$->children.push_back($1);
     $$->children.push_back($3);
@@ -212,9 +214,10 @@ assignment:
   }
   |
   array_call ASSIGN ID {
-    $$ = new Node("Assaign", "", yylineno);
+    $1->value = "1";
+    $$ = new Node("Assign", "", yylineno);
     $$->children.push_back($1);
-    $$->children.push_back(new Node("Identifier", $3, yylineno));
+    $$->children.push_back(new Node("Value", $3, yylineno));
   }
   |
   ID ASSIGN type SLB values SRB {
@@ -231,7 +234,6 @@ assignment:
     $$->children.push_back($3);
   }
   ;
-
 
 parameters:
   ID COLON type {
@@ -589,7 +591,8 @@ type:
 
 comment:
   COMMENT {
-    $$ = new Node("Comment", $1, yylineno);
+    $$ = new Node("Comment", "", yylineno);
+    $$->children.push_back(new Node("Value", $1, yylineno));
   }
   ;
 

@@ -1,83 +1,129 @@
 digraph {
 n0 [label="Block:Block"];
-n1 [label="Main:int"];
+n1 [label="Class:Fibonacci"];
 n2 [label="Block:Block"];
-n3 [label="varDecl:"];
-n4 [label="Modifier:volatile"];
+n3 [label="function_def:"];
+n4 [label="Identifier:fib"];
 n3 -> n4
-n5 [label="Identifier:n"];
+n5 [label="Parameters:"];
+n6 [label="Parameter:"];
+n7 [label="Identifier:n"];
+n6 -> n7
+n8 [label="Type:int"];
+n6 -> n8
+n5 -> n6
 n3 -> n5
-n6 [label="Type:int"];
-n3 -> n6
-n2 -> n3
-n7 [label="Read:"];
-n8 [label="Value:n"];
-n7 -> n8
-n2 -> n7
-n9 [label="varDecl:"];
-n10 [label="Modifier:volatile"];
+n9 [label="Return_type:"];
+n10 [label="Type:int"];
 n9 -> n10
-n11 [label="Identifier:x"];
-n9 -> n11
-n12 [label="Type:int"];
-n9 -> n12
-n13 [label="Value:1"];
-n9 -> n13
-n2 -> n9
-n14 [label="varDecl:"];
-n15 [label="Modifier:volatile"];
-n14 -> n15
-n16 [label="Identifier:i"];
-n14 -> n16
-n17 [label="Type:int"];
-n14 -> n17
-n18 [label="Value:2"];
-n14 -> n18
-n2 -> n14
-n19 [label="For_loop:"];
-n20 [label="Assign:1"];
-n21 [label="Identifier:i"];
-n20 -> n21
-n22 [label="Value:2"];
-n20 -> n22
-n19 -> n20
-n23 [label="Less_than_or_equal_to:"];
-n24 [label="Value:i"];
+n3 -> n9
+n11 [label="Block:Block"];
+n12 [label="If_statement:"];
+n13 [label="Less_than:"];
+n14 [label="Value:n"];
+n13 -> n14
+n15 [label="Value:3"];
+n13 -> n15
+n12 -> n13
+n16 [label="Block:Block"];
+n17 [label="Return:"];
+n18 [label="Value:1"];
+n17 -> n18
+n16 -> n17
+n12 -> n16
+n19 [label="Else:"];
+n20 [label="Block:Block"];
+n21 [label="Return:"];
+n22 [label="Add:"];
+n23 [label="function_call:fib"];
+n24 [label="Arguments:"];
+n25 [label="Minus:"];
+n26 [label="Value:n"];
+n25 -> n26
+n27 [label="Value:1"];
+n25 -> n27
+n24 -> n25
 n23 -> n24
-n25 [label="Value:n"];
-n23 -> n25
-n19 -> n23
-n26 [label="Assign:2"];
-n27 [label="Identifier:i"];
-n26 -> n27
-n28 [label="Add:"];
-n29 [label="Value:i"];
+n22 -> n23
+n28 [label="function_call:fib"];
+n29 [label="Arguments:"];
+n30 [label="Minus:"];
+n31 [label="Value:n"];
+n30 -> n31
+n32 [label="Value:2"];
+n30 -> n32
+n29 -> n30
 n28 -> n29
-n30 [label="Value:1"];
-n28 -> n30
-n26 -> n28
-n19 -> n26
-n31 [label="Block:Block"];
-n32 [label="Assign:"];
-n33 [label="Identifier:x"];
-n32 -> n33
-n34 [label="Multiply:"];
-n35 [label="Value:x"];
-n34 -> n35
-n36 [label="Value:i"];
-n34 -> n36
-n32 -> n34
-n31 -> n32
-n19 -> n31
-n2 -> n19
-n37 [label="Print:"];
-n38 [label="Value:x"];
-n37 -> n38
-n2 -> n37
-n39 [label="Return:"];
-n40 [label="Value:0"];
-n39 -> n40
-n2 -> n39
+n22 -> n28
+n21 -> n22
+n20 -> n21
+n19 -> n20
+n12 -> n19
+n11 -> n12
+n3 -> n11
+n2 -> n3
 n1 -> n2
 n0 -> n1
+n33 [label="Main:int"];
+n34 [label="Block:Block"];
+n35 [label="Assign:"];
+n36 [label="Identifier:fibonacci"];
+n35 -> n36
+n37 [label="Type:Fibonacci"];
+n35 -> n37
+n38 [label="Class:Fibonacci"];
+n35 -> n38
+n34 -> n35
+n39 [label="varDecl:"];
+n40 [label="Modifier:volatile"];
+n39 -> n40
+n41 [label="Identifier:n"];
+n39 -> n41
+n42 [label="Type:int"];
+n39 -> n42
+n43 [label="Value:1"];
+n39 -> n43
+n34 -> n39
+n44 [label="For_loop:"];
+n45 [label="Assign:1"];
+n46 [label="Identifier:n"];
+n45 -> n46
+n47 [label="Value:1"];
+n45 -> n47
+n44 -> n45
+n48 [label="Less_than_or_equal_to:"];
+n49 [label="Value:n"];
+n48 -> n49
+n50 [label="Value:16"];
+n48 -> n50
+n44 -> n48
+n51 [label="Assign:2"];
+n52 [label="Identifier:n"];
+n51 -> n52
+n53 [label="Add:"];
+n54 [label="Value:n"];
+n53 -> n54
+n55 [label="Value:1"];
+n53 -> n55
+n51 -> n53
+n44 -> n51
+n56 [label="Block:Block"];
+n57 [label="Print:"];
+n58 [label="Identifier:fibonacci"];
+n59 [label="function_call:fib"];
+n60 [label="Arguments:"];
+n61 [label="Value:n"];
+n60 -> n61
+n59 -> n60
+n58 -> n59
+n57 -> n58
+n56 -> n57
+n44 -> n56
+n34 -> n44
+n62 [label="Return:"];
+n63 [label="Value:0"];
+n62 -> n63
+n34 -> n62
+n33 -> n34
+n0 -> n33
 }
