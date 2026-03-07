@@ -1159,7 +1159,7 @@ namespace yy {
   case 29: // assignment: ID COLON ID ASSIGN class_call
 #line 174 "parser.yy"
                                 {
-    yylhs.value.as < Node * > () = new Node("Assign", "", yylineno);
+    yylhs.value.as < Node * > () = new Node("varDecl", "", yylineno);
 
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[4].value.as < std::string > (), yylineno));
     yylhs.value.as < Node * > ()->children.push_back(new Node("Type", yystack_[2].value.as < std::string > (), yylineno));
@@ -1232,7 +1232,7 @@ namespace yy {
   case 35: // assignment: ID ASSIGN type SLB values SRB
 #line 223 "parser.yy"
                                 {
-    yylhs.value.as < Node * > () = new Node("Assaign", "", yylineno);
+    yylhs.value.as < Node * > () = new Node("Assign", "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(new Node("Identifier", yystack_[5].value.as < std::string > (), yylineno));
     Node * array = new Node("Array", "", yylineno);
     array->children.push_back(yystack_[3].value.as < Node * > ());
@@ -1504,7 +1504,7 @@ namespace yy {
   case 61: // logical_or: logical_or OR logical_and
 #line 422 "parser.yy"
                             {
-    yylhs.value.as < Node * > () = new Node("", yystack_[1].value.as < std::string > (), yylineno);
+    yylhs.value.as < Node * > () = new Node(yystack_[1].value.as < std::string > (), "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(yystack_[2].value.as < Node * > ());
     yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ());
   }
@@ -1522,7 +1522,7 @@ namespace yy {
   case 63: // logical_and: logical_and AND equality
 #line 433 "parser.yy"
                           {
-    yylhs.value.as < Node * > () = new Node("", yystack_[1].value.as < std::string > (), yylineno);
+    yylhs.value.as < Node * > () = new Node(yystack_[1].value.as < std::string > (), "", yylineno);
     yylhs.value.as < Node * > ()->children.push_back(yystack_[2].value.as < Node * > ());
     yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ());
     

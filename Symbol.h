@@ -6,14 +6,6 @@ using namespace std;
 
 // https://medium.com/@pawan2505/understanding-structures-in-c-programming-ec638f710e6d
 
-enum Kind {
-    CLASS,
-    METHOD,
-    VARIABLE,
-    MAIN,
-    PARAMETER,
-};
-
 struct Symbol {
     string identifier;
     string type;
@@ -98,7 +90,7 @@ struct Return_symbol : Symbol {
 struct Main_symbol : Symbol {
 
     void print() override {
-        cout << "Main" << ":" << Symbol::type << endl;
+        cout << "Main()" << ":" << Symbol::type << endl;
     }
 };
 
@@ -137,6 +129,18 @@ struct Comment_symbol : Symbol {
         cout << "Comment : " << Symbol::identifier << endl;
     }
 
+};
+
+struct Else_symbol : Symbol {
+    void print() override {
+        cout << "else" << endl;
+    }
+};
+
+struct Break_symbol : Symbol {
+    void print() override {
+        cout << Symbol::identifier << endl;
+    }
 };
 
 #endif

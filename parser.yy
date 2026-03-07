@@ -172,7 +172,7 @@ assignment:
   }
   |
   ID COLON ID ASSIGN class_call {
-    $$ = new Node("Assign", "", yylineno);
+    $$ = new Node("varDecl", "", yylineno);
 
     $$->children.push_back(new Node("Identifier", $1, yylineno));
     $$->children.push_back(new Node("Type", $3, yylineno));
@@ -221,7 +221,7 @@ assignment:
   }
   |
   ID ASSIGN type SLB values SRB {
-    $$ = new Node("Assaign", "", yylineno);
+    $$ = new Node("Assign", "", yylineno);
     $$->children.push_back(new Node("Identifier", $1, yylineno));
     Node * array = new Node("Array", "", yylineno);
     array->children.push_back($3);
@@ -420,7 +420,7 @@ expression
 
 logical_or: 
   logical_or OR logical_and {
-    $$ = new Node("", $2, yylineno);
+    $$ = new Node($2, "", yylineno);
     $$->children.push_back($1);
     $$->children.push_back($3);
   }
@@ -431,7 +431,7 @@ logical_or:
 
 logical_and:
  logical_and AND equality {
-    $$ = new Node("", $2, yylineno);
+    $$ = new Node($2, "", yylineno);
     $$->children.push_back($1);
     $$->children.push_back($3);
     

@@ -14,84 +14,139 @@ Scope * Symbol_table::get_global_scope() {
 
 void Symbol_table::execute(Node* root) {
     if (!root) return;
-    bool create_scope = false;
 
-    Symbol * symPtr = nullptr;
+    Symbol* symPtr = nullptr;
+
     if (root->type == "Class") {
         symPtr = Class_s(symPtr, root);
-        create_scope = true;
-    }
-    else if(root->type == "function_def") {
-        symPtr = Method_s(symPtr, root);
-        create_scope = true;
-    }
-    else if(root->type == "Main") {
-        symPtr = Main_s(symPtr, root);
-        create_scope = true;
-    }
-    else if(root->type == "If_statement") {
-        symPtr = If_s(symPtr, root);
-        create_scope = true;
-    }
-    else if(root->type == "For_loop") {
-        symPtr = For_s(symPtr, root);
-        create_scope = true;
-        if (symPtr) {
-            current_scope->symbols[symPtr->identifier] = symPtr;
-            current_scope->ordered_symbols.push_back(symPtr);
-        }
 
-        enter_scope(symPtr);
-
-        // Kör endast body av loopen
-        for (Node* child : root->children) {
-            if (child->type == "Block") {
-                execute(child);
-            }
-        }
-
-        leave_scope();
-        return;
-
-    }
-    else if (root->type == "varDecl") {
-        symPtr = Variable_s(symPtr, root);
-    }
-    else if (root->type == "Assign") {
-        symPtr = Assign_s(symPtr, root);
-    }
-    else if (root->type == "Return") {
-        symPtr = Return_s(symPtr, root);
-    }
-    else if (root->type == "Print") {
-        symPtr = Print_s(symPtr, root);
-    }
-    else if (root->type == "Read") {
-        symPtr = Read_s(symPtr, root);
-    }
-    else if (root->type == "Comment") {
-        symPtr = Comment_s(symPtr, root);
-    }
-
-
-
-
-
-    if (symPtr) {
         current_scope->symbols[symPtr->identifier] = symPtr;
         current_scope->ordered_symbols.push_back(symPtr);
+
+        enter_scope(symPtr);
+        for (Node* child : root->children)
+            execute(child);
+        leave_scope();
+        return;
     }
 
-    if (create_scope) enter_scope(symPtr);
-    
+    else if (root->type == "function_def") {
+        symPtr = Method_s(symPtr, root);
 
-    for (Node* child : root->children)
-        execute(child);
-    
-    if (create_scope) leave_scope();
+        current_scope->symbols[symPtr->identifier] = symPtr;
+        current_scope->ordered_symbols.push_back(symPtr);
 
+        enter_scope(symPtr);
+        for (Node* child : root->children)
+            execute(child);
+        leave_scope();
+        return;
+    }
+
+    else if (root->type == "Main") {
+        symPtr = Main_s(symPtr, root);
+
+        current_scope->symbols["main"] = symPtr;
+        current_scope->ordered_symbols.push_back(symPtr);
+
+        enter_scope(symPtr);
+        for (Node* child : root->children)
+            execute(child);
+        leave_scope();
+        return;
+    }
+
+    else if (root->type == "If_statement") {
+        symPtr = If_s(symPtr, root);
+
+        current_scope->ordered_symbols.push_back(symPtr);
+
+        for (Node* child : root->children) {
+            if (child->type == "Block") {
+                enter_scope(symPtr);
+                execute(child);
+                leave_scope();
+            }
+            else if (child->type == "Else") {
+                Symbol* elseSym = nullptr;
+                elseSym = Else_s(elseSym, child);
+
+                current_scope->ordered_symbols.push_back(elseSym);
+
+                for (Node* elseChild : child->children) {
+                    if (elseChild->type == "Block") {
+                        enter_scope(elseSym);
+                        execute(elseChild);
+                        leave_scope();
+                    }
+                }
+            }
+        }
+        return;
+    }
+
+    else if (root->type == "For_loop") {
+        symPtr = For_s(symPtr, root);
+
+        current_scope->ordered_symbols.push_back(symPtr);
+
+        enter_scope(symPtr);
+        for (Node* child : root->children) {
+            if (child->type == "Block")
+                execute(child);
+        }
+        leave_scope();
+        return;
+    }
+
+    else if (root->type == "varDecl") {
+        symPtr = Variable_s(symPtr, root);
+        current_scope->symbols[symPtr->identifier] = symPtr;
+        current_scope->ordered_symbols.push_back(symPtr);
+        return;
+    }
+
+    else if (root->type == "Assign") {
+        symPtr = Assign_s(symPtr, root);
+        current_scope->ordered_symbols.push_back(symPtr);
+        return;
+    }
+
+    else if (root->type == "Return") {
+        symPtr = Return_s(symPtr, root);
+        current_scope->ordered_symbols.push_back(symPtr);
+        return;
+    }
+
+    else if (root->type == "Print") {
+        symPtr = Print_s(symPtr, root);
+        current_scope->ordered_symbols.push_back(symPtr);
+        return;
+    }
+
+    else if (root->type == "Read") {
+        symPtr = Read_s(symPtr, root);
+        current_scope->ordered_symbols.push_back(symPtr);
+        return;
+    }
+
+    else if (root->type == "Comment") {
+        symPtr = Comment_s(symPtr, root);
+        current_scope->ordered_symbols.push_back(symPtr);
+        return;
+    }
+
+    else if (root->type == "Block" || root->type == "Else") {
+        for (Node* child : root->children)
+            execute(child);
+        return;
+    }
+    else if (root->type == "Break") {
+        symPtr = Break_s(symPtr, root);
+        current_scope->ordered_symbols.push_back(symPtr);
+        return;
+    }
 }
-
 
 
 Symbol * Symbol_table::Class_s(Symbol * &symPtr, Node * root) {
@@ -136,12 +191,61 @@ Symbol * Symbol_table::Variable_s(Symbol * &symPtr, Node * root) {
             variable_symbol->identifier = child->value;
         else if (child->type == "Type")
             variable_symbol->type = child->value;
+        else if (child->type == "Class")
+            variable_symbol->value = child->value + "()";
         else if (child->type == "Modifier") {
             variable_symbol->isVolatile = true;
         }
         else if (child->type == "Value") {
             variable_symbol->value = child->value;
         }
+else if (child->type == "Class") {
+
+    bool has_call = false;
+
+    for (Node* c : child->children)
+        if (c->type == "function_call")
+            has_call = true;
+
+    // Constructor  QS()
+    if (!has_call) {
+        variable_symbol->value = child->value + "()";
+    }
+
+    // Method call  qs.Start(10)
+    else {
+
+        for (Node* c : child->children) {
+
+            if (c->type == "function_call") {
+
+                variable_symbol->value = child->value + "." + c->value;
+
+                for (Node* argNode : c->children) {
+
+                    if (argNode->type == "Arguments") {
+
+                        variable_symbol->value += "(";
+
+                        bool first = true;
+
+                        for (Node* arg : argNode->children) {
+
+                            if (!first)
+                                variable_symbol->value += ", ";
+
+                            variable_symbol->value += build_expr(arg,0);
+
+                            first = false;
+                        }
+
+                        variable_symbol->value += ")";
+                        }
+                    }
+                }
+            }
+        }
+    }
         else if (
             child->type == "Add" ||
             child->type == "Multiply" ||
@@ -176,76 +280,303 @@ Symbol * Symbol_table::Variable_s(Symbol * &symPtr, Node * root) {
     return symPtr;
 }
 
+
 Symbol * Symbol_table::Assign_s(Symbol * &symPtr, Node * root) {
     symPtr = new Assign_symbol();
     Assign_symbol * assign_symbol = static_cast<Assign_symbol*>(symPtr);
     
     for (Node* child : root->children) {
+
         if (child->type == "Identifier")
             assign_symbol->identifier = child->value;
-        else if (child->type == "Value") 
+
+        else if (child->type == "Value")
             assign_symbol->value = child->value;
+
+
+        else if (child->type == "function_call") {
+
+            assign_symbol->value = child->value;
+
+            for (Node* argNode : child->children) {
+                if (argNode->type == "Arguments") {
+
+                    assign_symbol->value += "(";
+                    bool first = true;
+
+                    for (Node* arg : argNode->children) {
+                        if (!first) assign_symbol->value += ", ";
+                        assign_symbol->value += build_expr(arg, 0);
+                        first = false;
+                    }
+
+                    assign_symbol->value += ")";
+                }
+            }
+        }
+
+
         else if (
             child->type == "Add" ||
             child->type == "Multiply" ||
             child->type == "Minus" ||
-            child->type == "Power" 
-        ) assign_symbol->value = build_expr(child, 0);
+            child->type == "Power" ||
+            child->type == "&" ||
+            child->type == "|" ||
+            child->type == "!" ||
+            child->type == "Less_than" ||
+            child->type == "Greater_than" ||
+            child->type == "Less_than_or_equal_to" ||
+            child->type == "Greater_than_or_equal_to" ||
+            child->type == "Equal_to"
+        )
+            assign_symbol->value = build_expr(child, 0);
+
+
         else if (child->type == "Array" && child->value == "1") {
+
             for (Node * x : child->children) {
+
                 if (x->type == "Identifier") {
-                    assign_symbol->identifier =  x->value;
+                    assign_symbol->identifier = x->value;
                 }
-                else if(x->type == "Index") {
+
+                else if (x->type == "Index") {
+
                     for (Node * q : x->children) {
+
                         if (
                             q->type == "Add" ||
                             q->type == "Multiply" ||
                             q->type == "Minus" ||
-                            q->type == "Power"
-                        ) assign_symbol->index += '[' + build_expr(q, 0) +']';
-                        else if (q->type == "Value") {
-                             assign_symbol->index += '[' + q->value +']';
-                        }
+                            q->type == "Power" ||
+                            q->type == "&" ||
+                            q->type == "|" ||
+                            q->type == "!" ||
+                            q->type == "Less_than" ||
+                            q->type == "Greater_than" ||
+                            q->type == "Less_than_or_equal_to" ||
+                            q->type == "Greater_than_or_equal_to" ||
+                            q->type == "Equal_to"
+                        )
+                            assign_symbol->index += '[' + build_expr(q, 0) + ']';
+
+                        else if (q->type == "Value")
+                            assign_symbol->index += '[' + q->value + ']';
                     }
                 }
-            }        
+            }
         }
+
+
         else if (child->type == "Array" && (child->value == "2" || child->value == "")) {
-            for (Node * x : child->children) {
-                if (x->type == "Identifier") {
-                    assign_symbol->value =  x->value;
+            bool literal = false;
+
+            for (Node* x : child->children)
+                if (x->type == "Array_literal")
+                    literal = true;
+
+
+            // ARRAY LITERAL  number := int[1,2,3]
+            if (literal) {
+
+                string type;
+
+                for (Node* x : child->children) {
+
+                    if (x->type == "Type")
+                        type = x->value;
+
+                    else if (x->type == "Array_literal") {
+
+                        assign_symbol->value = type + "[";
+
+                        bool first = true;
+
+                        for (Node* v : x->children) {
+
+                            if (!first)
+                                assign_symbol->value += ",";
+
+                            assign_symbol->value += v->value;
+
+                            first = false;
+                        }
+
+                        assign_symbol->value += "]";
+                    }
                 }
-                else if(x->type == "Index") {
-                    for (Node * q : x->children) {
-                        if (
-                            q->type == "Add" ||
-                            q->type == "Multiply" ||
-                            q->type == "Minus" ||
-                            q->type == "Power"
-                        ) assign_symbol->value += '[' + build_expr(q, 0) +']';
-                        else if (q->type == "Value") {
-                             assign_symbol->value += '[' + q->value +']';
+            }
+
+
+            // ORIGINAL ARRAY ACCESS
+            else {
+
+                for (Node * x : child->children) {
+
+                    if (x->type == "Identifier") {
+                        assign_symbol->value = x->value;
+                    }
+
+                    else if (x->type == "Index") {
+
+                        for (Node * q : x->children) {
+
+                            if (
+                                q->type == "Add" ||
+                                q->type == "Multiply" ||
+                                q->type == "Minus" ||
+                                q->type == "Power"
+                            )
+                                assign_symbol->value += '[' + build_expr(q, 0) + ']';
+
+                            else if (q->type == "Value")
+                                assign_symbol->value += '[' + q->value + ']';
                         }
                     }
                 }
-            }        
+            }
         }
     }
+
 
     Symbol* found = lookup(assign_symbol->identifier);
 
     if (found == nullptr) {
         errors.push_back("Variable '" + assign_symbol->identifier + "' not declared in this scope.");
     }
+
     return symPtr;
+}
+
+int Symbol_table::precedence(const string& type) {
+
+    if (type == "|") return 1;
+    if (type == "&") return 2;
+
+    if (
+        type == "Less_than" ||
+        type == "Greater_than" ||
+        type == "Less_than_or_equal_to" ||
+        type == "Greater_than_or_equal_to" ||
+        type == "Equal_to"
+    ) return 3;
+
+    if (type == "Add" || type == "Minus") return 4;
+
+    if (type == "Multiply" || type == "Divide") return 5;
+
+    if (type == "Power") return 6;
+
+    if (type == "!") return 7;
+
+    return 8;
 }
 
 string Symbol_table::build_expr(Node* node, int parentPrec) {
 
+    if (!node) return "";
+
+    // VALUE / IDENTIFIER
     if (node->type == "Value" || node->type == "Identifier")
         return node->value;
 
+
+    // NOT operator  !x
+    if (node->type == "!") {
+
+        auto it = node->children.begin();
+
+        return "!" + build_expr(*it, precedence(node->type));
+    }
+
+
+    // ARRAY ACCESS  values[i]
+    if (node->type == "Array") {
+
+        string result;
+
+        for (Node* child : node->children) {
+
+            if (child->type == "Identifier")
+                result += child->value;
+
+            else if (child->type == "Index") {
+
+                result += "[";
+
+                bool first = true;
+
+                for (Node* idx : child->children) {
+
+                    if (!first)
+                        result += ",";
+
+                    result += build_expr(idx, 0);
+
+                    first = false;
+                }
+
+                result += "]";
+            }
+        }
+
+        return result;
+    }
+
+
+    // FUNCTION CALL
+    if (node->type == "function_call") {
+
+        string result = node->value;
+
+        for (Node* child : node->children) {
+
+            if (child->type == "Arguments") {
+
+                result += "(";
+
+                bool first = true;
+
+                for (Node* arg : child->children) {
+
+                    if (!first)
+                        result += ", ";
+
+                    result += build_expr(arg, 0);
+
+                    first = false;
+                }
+
+                result += ")";
+            }
+        }
+
+        return result;
+    }
+
+
+    // ARGUMENT LIST
+    if (node->type == "Arguments") {
+
+        string result;
+        bool first = true;
+
+        for (Node* child : node->children) {
+
+            if (!first)
+                result += ", ";
+
+            result += build_expr(child, 0);
+
+            first = false;
+        }
+
+        return result;
+    }
+
+
+    // OPERATORS
     string op;
 
     if (node->type == "Add") op = "+";
@@ -254,9 +585,23 @@ string Symbol_table::build_expr(Node* node, int parentPrec) {
     else if (node->type == "Divide") op = "/";
     else if (node->type == "Power") op = "^";
 
+    else if (node->type == "&") op = "&";
+    else if (node->type == "|") op = "|";
+
+    else if (node->type == "Less_than") op = "<";
+    else if (node->type == "Greater_than") op = ">";
+    else if (node->type == "Less_than_or_equal_to") op = "<=";
+    else if (node->type == "Greater_than_or_equal_to") op = ">=";
+    else if (node->type == "Equal_to") op = "=";
+
+    else
+        return "";
+
+
     auto it = node->children.begin();
+
     string left = build_expr(*it++, precedence(node->type));
-    string right = build_expr(*it,  precedence(node->type));
+    string right = build_expr(*it, precedence(node->type));
 
     string expr = left + " " + op + " " + right;
 
@@ -266,55 +611,136 @@ string Symbol_table::build_expr(Node* node, int parentPrec) {
     return expr;
 }
 
-int Symbol_table::precedence(const string& type) {
-    if (type == "Add" || type == "Minus") return 1;
-    if (type == "Multiply" || type == "Divide") return 2;
-    if (type == "Power") return 3;
-    return 4;
-}
-
-
 Symbol * Symbol_table::Return_s(Symbol * &symPtr, Node * root) {
     symPtr = new Return_symbol();
     Return_symbol * return_symbol = static_cast<Return_symbol*>(symPtr);
-    
+
     for (Node* child : root->children) {
-        if (child->type == "Value") {
+
+        if (child->type == "Value" || child->type == "Identifier") {
             return_symbol->value = child->value;
         }
+
+        else if (
+            child->type == "Add" ||
+            child->type == "Minus" ||
+            child->type == "Multiply" ||
+            child->type == "Divide" ||
+            child->type == "Power" ||
+            child->type == "function_call"
+        ) {
+            return_symbol->value = build_expr(child, 0);
+        }
     }
+
     return symPtr;
 }
+
 
 Symbol * Symbol_table::Print_s(Symbol * &symPtr, Node * root) {
     symPtr = new Print_symbol();
     Print_symbol * print_symbol = static_cast<Print_symbol*>(symPtr);
     
     for (Node* child : root->children) {
+
         if (child->type == "Value") {
             print_symbol->value = child->value;
         }
-        else if (child->type == "Array") {
-            for (Node * x : child->children) {
-                if (x->type == "Identifier") {
-                    print_symbol->value =  x->value;
+        else if (child->type == "Class") {
+
+            print_symbol->value = child->value;
+
+            for (Node* c : child->children) {
+
+                if (c->type == "function_call") {
+
+                    print_symbol->value += "." + c->value;
+
+                    for (Node* argNode : c->children) {
+
+                        if (argNode->type == "Arguments") {
+
+                            print_symbol->value += "(";
+
+                            bool first = true;
+
+                            for (Node* arg : argNode->children) {
+
+                                if (!first) print_symbol->value += ", ";
+
+                                print_symbol->value += build_expr(arg, 0);
+
+                                first = false;
+                            }
+
+                            print_symbol->value += ")";
+                        }
+                    }
                 }
-                else if(x->type == "Index") {
+            }
+        }
+        else if (child->type == "Identifier") {
+
+            print_symbol->value = child->value;
+
+            for (Node* c : child->children) {
+
+                if (c->type == "function_call") {
+
+                    print_symbol->value += "." + c->value;
+
+                    for (Node* argNode : c->children) {
+
+                        if (argNode->type == "Arguments") {
+
+                            print_symbol->value += "(";
+
+                            bool first = true;
+
+                            for (Node* arg : argNode->children) {
+
+                                if (!first) print_symbol->value += ", ";
+
+                                print_symbol->value += build_expr(arg, 0);
+
+                                first = false;
+                            }
+
+                            print_symbol->value += ")";
+                        }
+                    }
+                }
+            }
+        }
+
+        else if (child->type == "Array") {
+
+            for (Node * x : child->children) {
+
+                if (x->type == "Identifier") {
+                    print_symbol->value = x->value;
+                }
+
+                else if (x->type == "Index") {
+
                     for (Node * q : x->children) {
+
                         if (
                             q->type == "Add" ||
                             q->type == "Multiply" ||
                             q->type == "Minus" ||
                             q->type == "Power"
-                        ) print_symbol->value += '[' + build_expr(q, 0) +']';
-                        else if (q->type == "Value") {
+                        )
+                            print_symbol->value += '[' + build_expr(q, 0) + ']';
+
+                        else if (q->type == "Value")
                             print_symbol->value += '[' + q->value + ']';
-                        }
                     }
                 }
-            }        
+            }
         }
     }
+
     return symPtr;
 }
 
@@ -342,6 +768,7 @@ Symbol * Symbol_table::For_s(Symbol * &symPtr, Node * root) {
     For_symbol * for_symbol = static_cast<For_symbol*>(symPtr);
 
     for (Node* child : root->children) {
+
         if (child->type == "Assign" && child->value == "1") {
             for (Node * c : child->children) {
                 if (c->type == "Identifier") {
@@ -352,114 +779,170 @@ Symbol * Symbol_table::For_s(Symbol * &symPtr, Node * root) {
                 }
             }
         } 
+
         else if (child->type == "Assign" && child->value == "2") {
+
+            bool first = true;
+
             for (Node * c : child->children) {
-                if (c->type == "Identifier") {
+
+                if ((c->type == "Identifier" || c->type == "Value") && first) {
                     for_symbol->part3 += c->value + " := ";
+                    first = false;
                 }
-                else if (c->type == "Value") {
+
+                else if (c->type == "Identifier" || c->type == "Value") {
                     for_symbol->part3 += c->value;
                 }
+
                 else if (
                     c->type == "Add" ||
                     c->type == "Multiply" ||
                     c->type == "Minus" ||
-                    c->type == "Power" 
-                ) for_symbol->part3 += build_expr(c, 0);
+                    c->type == "Power"
+                ) {
+                    for_symbol->part3 += build_expr(c, 0);
+                }
             }
         }
+
         else if (
             child->type == "Greater_than_or_equal_to" ||
-            child->type ==  "Less_than_or_equal_to" || 
-            child->type ==  "Greater_than" ||
-            child->type ==  "Less_than"
+            child->type == "Less_than_or_equal_to" || 
+            child->type == "Greater_than" ||
+            child->type == "Less_than"
         ) {
+
             int index = 0;
             string temp[2];
+
             for (Node * c : child->children) {
+
                 if (c->type == "Value") {
                     temp[index++] = c->value;
                 }
+
+                else if (c->type == "Array") {
+
+                    for (Node * x : c->children) {
+
+                        if (x->type == "Identifier") {
+                            temp[index] += x->value;
+                        }
+
+                        for (Node * v : x->children) {
+                            if (v->type == "function_call") {
+                                temp[index] += "." + v->value;
+                            }
+                        }
+                    }
+
+                    index++;
+                }
+
                 else if (
                     c->type == "Add" ||
                     c->type == "Multiply" ||
                     c->type == "Minus" ||
-                    c->type == "Power" 
-                ) temp[index++] += build_expr(c, 0);
+                    c->type == "Power"
+                ) {
+                    temp[index++] += build_expr(c, 0);
+                }
             }
-            if (child->type == "Greater_than_or_equal_to") for_symbol->part2 = temp[0] + " >= " + temp[1];
-            else if (child->type == "Less_than_or_equal_to") for_symbol->part2 = temp[0] + " <= " + temp[1];
-            else if (child->type == "Greater_than") for_symbol->part2 = temp[0] + " > " + temp[1];
-            else if (child->type == "Less_than") for_symbol->part2 = temp[0] + " < " + temp[1];
+
+            if (child->type == "Greater_than_or_equal_to")
+                for_symbol->part2 = temp[0] + " >= " + temp[1];
+
+            else if (child->type == "Less_than_or_equal_to")
+                for_symbol->part2 = temp[0] + " <= " + temp[1];
+
+            else if (child->type == "Greater_than")
+                for_symbol->part2 = temp[0] + " > " + temp[1];
+
+            else if (child->type == "Less_than")
+                for_symbol->part2 = temp[0] + " < " + temp[1];
+        }
+
+        else if (child->type == "Value") {
+            for_symbol->part2 = child->value;
         }
     }
+
     return symPtr;
 }
 
 Symbol * Symbol_table::If_s(Symbol * &symPtr, Node * root) {
     symPtr = new If_symbol();
     If_symbol * if_symbol = static_cast<If_symbol*>(symPtr);
-    
+
+    bool negation = false;
+
     for (Node* child : root->children) {
-        if (child->type == "Equal_to") {
-            if_symbol->op = " = ";
-            for (Node * c : child->children) {
+
+        if (child->type == "!") {
+            negation = true;
+
+            for (Node* inner : child->children) {
+
                 if (
-                    c->type == "Add" ||
-                    c->type == "Multiply" ||
-                    c->type == "Minus" ||
-                    c->type == "Power" ) {
-                        if_symbol->part1 = build_expr(c, 0);
-                    }
-                else if (c->type == "Value") if_symbol->part2 = c->value;
+                    inner->type == "Greater_than_or_equal_to" ||
+                    inner->type == "Less_than_or_equal_to" ||
+                    inner->type == "Greater_than" ||
+                    inner->type == "Less_than" ||
+                    inner->type == "Equal_to"
+                ) {
+
+                    auto it = inner->children.begin();
+
+                    string left = build_expr(*it++, 0);
+                    string right = build_expr(*it, 0);
+
+                    if_symbol->part1 = left;
+                    if_symbol->part2 = right;
+
+                    if (inner->type == "Greater_than_or_equal_to") if_symbol->op = ">=";
+                    else if (inner->type == "Less_than_or_equal_to") if_symbol->op = "<=";
+                    else if (inner->type == "Greater_than") if_symbol->op = ">";
+                    else if (inner->type == "Less_than") if_symbol->op = "<";
+                    else if (inner->type == "Equal_to") if_symbol->op = "=";
+                }
             }
         }
         else if (
             child->type == "Greater_than_or_equal_to" ||
-            child->type ==  "Less_than_or_equal_to" || 
-            child->type ==  "Greater_than" ||
-            child->type ==  "Less_than"
-        ) 
-        {
-            int index = 0;
-            string temp[2];
-            for (Node * c : child->children) {
-                if (c->type == "Array") {
-                    for (Node * x : c->children) {
-                        if (x->type == "Identifier") {
-                            temp[index] += x->value;
-                        }
-                        else if(x->type == "Index") {
-                            for (Node * q : x->children) {
-                                if (
-                                    q->type == "Add" ||
-                                    q->type == "Multiply" ||
-                                    q->type == "Minus" ||
-                                    q->type == "Power"
-                                ) temp[index] += '[' + build_expr(q, 0) +']';
-                                else if (q->type == "Value") {
-                                    temp[index] += '[' + q->value +']';
-                                }
-                            }
-                        }
-                    }
-                }
-                else if (c->type == "Value") {
-                    temp[index] = c->value;
-                }
-                index++;
-            }
-            if_symbol->part1 = temp[0];
-            if_symbol->part2 = temp[1];
-            if (child->type == "Greater_than_or_equal_to") if_symbol->op = '>=';
-            else if (child->type == "Less_than_or_equal_to") if_symbol->op = '<=';
-            else if (child->type == "Greater_than") if_symbol->op = '>';
-            else if (child->type == "Less_than") if_symbol->op = '<';
+            child->type == "Less_than_or_equal_to" ||
+            child->type == "Greater_than" ||
+            child->type == "Less_than" ||
+            child->type == "Equal_to"
+        ) {
+
+            auto it = child->children.begin();
+
+            string left = build_expr(*it++, 0);
+            string right = build_expr(*it, 0);
+
+            if_symbol->part1 = left;
+            if_symbol->part2 = right;
+
+            if (child->type == "Greater_than_or_equal_to") if_symbol->op = ">=";
+            else if (child->type == "Less_than_or_equal_to") if_symbol->op = "<=";
+            else if (child->type == "Greater_than") if_symbol->op = ">";
+            else if (child->type == "Less_than") if_symbol->op = "<";
+            else if (child->type == "Equal_to") if_symbol->op = "=";
+        }
+        else if (child->type == "Value") {
+            if_symbol->part1 = child->value; 
         }
     }
+
+    // APPLY NEGATION IF NEEDED
+    if (negation) {
+        if_symbol->part1 = "!(" + if_symbol->part1;
+        if_symbol->part2 = if_symbol->part2 + ")";
+    }
+
     return symPtr;
 }
-
 
 Symbol * Symbol_table::Comment_s(Symbol * &symPtr, Node * root) {
     symPtr = new Comment_symbol();
@@ -472,10 +955,18 @@ Symbol * Symbol_table::Comment_s(Symbol * &symPtr, Node * root) {
     return symPtr;
 }
 
+Symbol* Symbol_table::Else_s(Symbol*& symPtr, Node* root) {
+    symPtr = new Else_symbol();
+    symPtr->identifier = "else";
+    return symPtr;
+}
 
-
-
-
+Symbol * Symbol_table::Break_s(Symbol * &symPtr, Node * root) {
+    symPtr = new Break_symbol();
+    symPtr->identifier = root->value;
+    
+    return symPtr;
+}
 
 
 
@@ -528,6 +1019,10 @@ void Symbol_table::print_scope(Scope* scope, int indent)
             ifPtr->print();
         else if (auto CommentPtr = dynamic_cast<Comment_symbol*>(symbol))
             CommentPtr->print();
+        else if (auto elsePtr = dynamic_cast<Else_symbol*>(symbol))
+            elsePtr->print();
+        else if (auto breakPtr = dynamic_cast<Break_symbol*>(symbol))
+            breakPtr->print();
 
         for (auto* child : scope->children) {
             if (child->scope_name == symbol)
@@ -582,3 +1077,5 @@ Symbol* Symbol_table::lookup(const string& name) {
     }
     return nullptr;
 }
+
+

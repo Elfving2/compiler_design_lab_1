@@ -23,6 +23,8 @@ class Symbol_table {
         Symbol * For_s(Symbol * &symPtr, Node * root);
         Symbol * If_s(Symbol * &symPtr, Node * root);
         Symbol * Comment_s(Symbol * &symPtr, Node * root);
+        Symbol * Else_s(Symbol*& symPtr, Node* root);
+        Symbol * Break_s(Symbol * &symPtr, Node * root);
         string build_expr(Node* node, int parentPrec);
         int precedence(const string& type);
 
