@@ -1,0 +1,21 @@
+digraph CFG {
+
+node [shape=box];
+
+B0 [label="Block 0\nread n\nx = 1\ni = 2\ni = 2\n"];
+
+B1 [label="Block 1\nL0:\nT0 = i <= n\nif T0 goto L1\n"];
+
+B2 [label="Block 2\ngoto L2\n"];
+
+B3 [label="Block 3\nL1:\nT1 = x * i\nx = T1\nT2 = i + 1\ni = T2\ngoto L0\n"];
+
+B4 [label="Block 4\nL2:\nprint x\nreturn 0\n"];
+
+B0 -> B1;
+B1 -> B3;
+B1 -> B2;
+B2 -> B4;
+B3 -> B1;
+
+}

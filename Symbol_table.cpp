@@ -407,9 +407,6 @@ Symbol * Symbol_table::Assign_s(Symbol * &symPtr, Node * root) {
                     }
                 }
             }
-
-
-            // ORIGINAL ARRAY ACCESS
             else {
 
                 for (Node * x : child->children) {
@@ -967,24 +964,6 @@ Symbol * Symbol_table::Break_s(Symbol * &symPtr, Node * root) {
     
     return symPtr;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void Symbol_table::indentation(int indent) {
     for (int i = 0; i < indent; i++) {

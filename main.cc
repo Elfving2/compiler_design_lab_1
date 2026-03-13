@@ -1,6 +1,8 @@
 #include <iostream>
 #include "parser.tab.hh"
 #include "Symbol_table.h"
+#include "IRGenerator.h"
+#include "CodeGenerator.h"
 
 
 extern Node *root;
@@ -67,8 +69,19 @@ int main(int argc, char **argv)
 				root->generate_tree();
 				Symbol_table table;
 				table.execute(root);
-				table.print();
-				table.print_errors();
+				// table.print();
+				// table.print_errors();
+
+				IRGenerator ir;
+				ir.execute(root);
+				ir.print_TAC();
+				vector<basic_block> blocks = ir.build_basic_blocks();
+				ir.build_cfg(blocks);
+				ir.generate_dot(blocks);
+
+				CodeGenerator codeGen;
+				codeGen.generate(blocks);
+
 			}
 			catch (...)
 			{

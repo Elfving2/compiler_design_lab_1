@@ -1,5 +1,5 @@
 compiler: lex.yy.c parser.tab.o main.cc
-		g++ -g -w -ocompiler parser.tab.o lex.yy.c main.cc Symbol_table.h Symbol_table.cpp -std=c++14
+		g++ -g -w -ocompiler parser.tab.o lex.yy.c main.cc Symbol_table.h Symbol_table.cpp IRGenerator.cpp CodeGenerator.cpp CodeGenerator.h -std=c++14
 parser.tab.o: parser.tab.cc
 		g++ -g -w -c parser.tab.cc -std=c++14
 parser.tab.cc: parser.yy
@@ -15,5 +15,6 @@ clean:
 debug: 
 		bison -Wcounterexamples -Wconflicts-sr -Wconflicts-rr -Wall parser.yy	
 
-
+cfg:
+	dot -Tpdf cfg.dot -o cfg.pdf
 
